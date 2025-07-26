@@ -1,63 +1,70 @@
-import { ClienteDto } from '../cliente/cliente.dto';
-import { ProfissionalDto } from '../profissional/profissional.dto';
-import { ServicoDto } from '../servico/servico.dto';
-
 /**
- * Enum de status do agendamento
+ * DTOs para o módulo Agendamento
  */
+
+// Enums
 export enum StatusAgendamento {
   PENDENTE = 'PENDENTE',
   CONFIRMADO = 'CONFIRMADO',
-  EM_ANDAMENTO = 'EM_ANDAMENTO',
-  CONCLUIDO = 'CONCLUIDO',
   CANCELADO = 'CANCELADO',
-  NAO_COMPARECEU = 'NAO_COMPARECEU'
+  REALIZADO = 'REALIZADO',
+  AUSENTE = 'AUSENTE'
 }
 
-/**
- * DTO de resposta de agendamento
- */
+// DTOs de Request
+export interface CriarAgendamentoRequest {
+  clienteId: number;
+  profissionalId: number;
+  barbeariaId: number;
+  servicoIds: number[];
+  horario: string; // formato: yyyy-MM-ddTHH:mm:ss
+}
+
+export interface AtualizarAgendamentoRequest {
+  dataHora: string; // formato: yyyy-MM-ddTHH:mm:ss
+  clienteId: number;
+  profissionalId: number;
+  servicoId: number;
+  barbeariaId: number;
+  status: string;
+}
+
+// DTOs de Response
+export interface ClienteDto {
+  id: number;
+  nome: string;
+  email: string;
+}
+
+export interface ProfissionalDto {
+  id: number;
+  nome: string;
+}
+
+export interface ServicoDto {
+  id: number;
+  nome: string;
+  preco: string;
+  duracaoMinutos: number;
+}
+
 export interface AgendamentoResponse {
   id: number;
   cliente: ClienteDto;
   profissional: ProfissionalDto;
   servicos: ServicoDto[];
-  horario: string;
-  status: StatusAgendamento;
+  horario: string; // formato: date-time
+  status: string;
 }
 
-/**
- * DTO de criação de agendamento
- */
-export interface CriarAgendamentoRequest {
-  clienteId: number;
-  profissionalId: number;
-  servicoIds: number[];
-  horario: string;
-}
-
-/**
- * DTO de atualização de agendamento
- */
-export interface UpdateAgendamentoRequest {
-  clienteId?: number;
-  profissionalId?: number;
-  servicoIds?: number[];
-  horario?: string;
-  status?: StatusAgendamento;
-}
-
-/**
- * DTO de filtro de agendamento
- */
+// DTOs de Filtro
 export interface AgendamentoFilter {
   clienteId?: number;
   profissionalId?: number;
   barbeariaId?: number;
-  status?: StatusAgendamento;
+  status?: string;
   dataInicio?: string;
   dataFim?: string;
-  servicoId?: number;
 }
 
 /**

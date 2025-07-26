@@ -1,0 +1,265 @@
+.modal-form {
+  position: relative;
+  min-height: 400px;
+
+  .form-section {
+    margin-bottom: 2rem;
+    animation: slideInUp 0.3s ease-out;
+
+    .section-title {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 1.5rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 2px solid var(--primary-color);
+      color: var(--primary-color);
+      font-weight: 600;
+      font-size: 1.1rem;
+
+      i {
+        font-size: 1.2rem;
+      }
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      margin-bottom: 1rem;
+
+      .form-field {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+
+        label {
+          font-weight: 500;
+          color: var(--text-color);
+          font-size: 0.875rem;
+        }
+
+        // Estilos para select nativo
+        .form-select {
+          width: 100%;
+          padding: 0.5rem;
+          border: 1px solid var(--surface-border);
+          border-radius: 6px;
+          background: var(--surface-ground);
+          color: var(--text-color);
+          font-size: 0.875rem;
+          transition: all 0.2s;
+
+          &:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px var(--primary-color-alpha-20);
+          }
+
+          &.invalid {
+            border-color: var(--red-500);
+            
+            &:focus {
+              box-shadow: 0 0 0 2px var(--red-200);
+            }
+          }
+        }
+
+        // Estilos para input nativo
+        .form-input {
+          width: 100%;
+          padding: 0.5rem;
+          border: 1px solid var(--surface-border);
+          border-radius: 6px;
+          background: var(--surface-ground);
+          color: var(--text-color);
+          font-size: 0.875rem;
+          transition: all 0.2s;
+
+          &:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px var(--primary-color-alpha-20);
+          }
+
+          &.invalid {
+            border-color: var(--red-500);
+            
+            &:focus {
+              box-shadow: 0 0 0 2px var(--red-200);
+            }
+          }
+        }
+
+        // Estilos para multiselect de serviços
+        .multiselect-container {
+          max-height: 200px;
+          overflow-y: auto;
+          border: 1px solid var(--surface-border);
+          border-radius: 6px;
+          padding: 0.5rem;
+          background: var(--surface-ground);
+
+          .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.25rem 0;
+            transition: background-color 0.2s;
+
+            &:hover {
+              background: var(--surface-hover);
+              border-radius: 4px;
+              padding-left: 0.5rem;
+              padding-right: 0.5rem;
+            }
+
+            .form-checkbox {
+              width: 16px;
+              height: 16px;
+              accent-color: var(--primary-color);
+              cursor: pointer;
+            }
+
+            .checkbox-label {
+              font-size: 0.875rem;
+              color: var(--text-color);
+              cursor: pointer;
+              flex: 1;
+              user-select: none;
+            }
+          }
+        }
+
+        .error-message {
+          color: var(--red-500);
+          font-size: 0.75rem;
+          margin-top: 0.25rem;
+        }
+      }
+    }
+  }
+
+  .loading-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.9);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    z-index: 1000;
+    border-radius: 8px;
+
+    p {
+      color: var(--text-color-secondary);
+      font-size: 0.875rem;
+      margin: 0;
+    }
+  }
+}
+
+.modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--surface-border);
+
+  button {
+    min-width: 120px;
+  }
+}
+
+.horario-info {
+  margin-top: 4px;
+  
+  .horario-text {
+    color: var(--primary-color);
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    
+    i {
+      font-size: 12px;
+    }
+  }
+}
+
+.horario-dica {
+  margin-top: 4px;
+  
+  .dica-text {
+    color: var(--text-color-secondary);
+    font-style: italic;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    
+    i {
+      font-size: 12px;
+    }
+  }
+}
+
+// Responsividade
+@media (max-width: 768px) {
+  .modal-form {
+    .form-section {
+      .form-row {
+        grid-template-columns: 1fr;
+        gap: 0.75rem;
+      }
+    }
+  }
+
+  .modal-footer {
+    flex-direction: column;
+    
+    button {
+      width: 100%;
+    }
+  }
+}
+
+// Animações
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// Customização do Dialog
+::ng-deep .p-dialog {
+  .p-dialog-header {
+    background: var(--surface-section);
+    border-bottom: 1px solid var(--surface-border);
+    padding: 1.5rem;
+    
+    .p-dialog-title {
+      color: var(--text-color);
+      font-weight: 600;
+    }
+  }
+
+  .p-dialog-content {
+    padding: 1.5rem;
+    background: var(--surface-card);
+  }
+
+  .p-dialog-footer {
+    background: var(--surface-section);
+    border-top: 1px solid var(--surface-border);
+    padding: 1.5rem;
+  }
+} 

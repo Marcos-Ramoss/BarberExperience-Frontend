@@ -1,0 +1,199 @@
+<p-toast position="top-right"></p-toast>
+
+<p-dialog 
+  [(visible)]="visible" 
+  [modal]="true" 
+  [draggable]="false" 
+  [resizable]="false"
+  [style]="{width: '600px'}"
+  [header]="modoEdicao ? 'Editar Agendamento' : 'Novo Agendamento'"
+  (onHide)="hide()">
+
+  <form [formGroup]="agendamentoForm" (ngSubmit)="onSubmit()" class="modal-form">
+    
+    <!-- Seção: Informações do Agendamento -->
+    <div class="form-section">
+      <div class="section-title">
+        <i class="pi pi-calendar"></i>
+        <span>Informações do Agendamento</span>
+      </div>
+      
+      <div class="form-row">
+        <!-- Cliente -->
+        <div class="form-field">
+          <label for="clienteId">Cliente *</label>
+          <select
+            id="clienteId"
+            formControlName="clienteId"
+            [class.invalid]="isFieldInvalid('clienteId')"
+            class="form-select">
+            <option value="">Selecione um cliente</option>
+            <option *ngFor="let cliente of clientes" [value]="cliente.id">
+              {{ cliente.nome }}
+            </option>
+          </select>
+          <small class="error-message" *ngIf="isFieldInvalid('clienteId')">
+            {{ getFieldError('clienteId') }}
+          </small>
+        </div>
+
+        <!-- Profissional -->
+        <div class="form-field">
+          <label for="profissionalId">Profissional *</label>
+          <select
+            id="profissionalId"
+            formControlName="profissionalId"
+            [class.invalid]="isFieldInvalid('profissionalId')"
+            class="form-select">
+            <option value="">Selecione um profissional</option>
+            <option *ngFor="let profissional of profissionais" [value]="profissional.id">
+              {{ profissional.nome }}
+            </option>
+          </select>
+          <small class="error-message" *ngIf="isFieldInvalid('profissionalId')">
+            {{ getFieldError('profissionalId') }}
+          </small>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <!-- Barbearia -->
+        <div class="form-field">
+          <label for="barbeariaId">Barbearia *</label>
+          <select
+            id="barbeariaId"
+            formControlName="barbeariaId"
+            [class.invalid]="isFieldInvalid('barbeariaId')"
+            class="form-select">
+            <option value="">Selecione uma barbearia</option>
+            <option *ngFor="let barbearia of barbearias" [value]="barbearia.id">
+              {{ barbearia.nome }}
+            </option>
+          </select>
+          <!-- Exibir horário de funcionamento -->
+          <div *ngIf="barbeariaSelecionada && (horarioAbertura || horarioFechamento)" class="horario-info">
+            <small class="horario-text">
+              <i class="pi pi-clock"></i>
+              Horário de funcionamento: {{ horarioAbertura }} - {{ horarioFechamento }}
+            </small>
+          </div>
+          <small class="error-message" *ngIf="isFieldInvalid('barbeariaId')">
+            {{ getFieldError('barbeariaId') }}
+          </small>
+        </div>
+
+        <!-- Status (apenas na edição) -->
+        <div class="form-field" *ngIf="modoEdicao">
+          <label for="status">Status *</label>
+          <select
+            id="status"
+            formControlName="status"
+            [class.invalid]="isFieldInvalid('status')"
+            class="form-select">
+            <option value="">Selecione o status</option>
+            <option *ngFor="let opcao of opcoesStatus" [value]="opcao.value">
+              {{ opcao.label }}
+            </option>
+          </select>
+          <small class="error-message" *ngIf="isFieldInvalid('status')">
+            {{ getFieldError('status') }}
+          </small>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <!-- Data e Hora -->
+        <div class="form-field">
+          <label for="horario">Data e Hora *</label>
+          <input
+            id="horario"
+            type="datetime-local"
+            formControlName="horario"
+            [class.invalid]="isFieldInvalid('horario')"
+            class="form-input"
+            [min]="getMinDateString()"
+            (change)="onHorarioChange()">
+          <!-- Dica sobre horário de funcionamento -->
+          <div *ngIf="barbeariaSelecionada && (horarioAbertura || horarioFechamento)" class="horario-dica">
+            <small class="dica-text">
+              <i class="pi pi-info-circle"></i>
+              Selecione um horário entre {{ horarioAbertura }} e {{ horarioFechamento }}
+            </small>
+          </div>
+          <small class="error-message" *ngIf="isFieldInvalid('horario')">
+            {{ getFieldError('horario') }}
+          </small>
+        </div>
+
+        <!-- Serviços -->
+        <div class="form-field" *ngIf="!modoEdicao">
+          <label for="servicoIds">Serviços *</label>
+          <div class="multiselect-container">
+            <div *ngFor="let servico of servicos" class="checkbox-item">
+              <input
+                type="checkbox"
+                [id]="'servico-' + servico.id"
+                [value]="servico.id"
+                [checked]="isServicoSelected(servico.id)"
+                (change)="toggleServico(servico.id)"
+                class="form-checkbox">
+              <label [for]="'servico-' + servico.id" class="checkbox-label">
+                {{ servico.nome }} - R$ {{ servico.preco }}
+              </label>
+            </div>
+          </div>
+          <small class="error-message" *ngIf="isFieldInvalid('servicoIds')">
+            {{ getFieldError('servicoIds') }}
+          </small>
+        </div>
+        <!-- Serviço único na edição -->
+        <div class="form-field" *ngIf="modoEdicao">
+          <label for="servicoId">Serviço *</label>
+          <select
+            id="servicoId"
+            formControlName="servicoId"
+            [class.invalid]="isFieldInvalid('servicoId')"
+            class="form-select">
+            <option value="">Selecione o serviço</option>
+            <option *ngFor="let servico of servicos" [value]="servico.id">
+              {{ servico.nome }} - R$ {{ servico.preco }}
+            </option>
+          </select>
+          <small class="error-message" *ngIf="isFieldInvalid('servicoId')">
+            {{ getFieldError('servicoId') }}
+          </small>
+        </div>
+      </div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" *ngIf="loading">
+      <p-progressSpinner></p-progressSpinner>
+      <p>{{ modoEdicao ? 'Atualizando agendamento...' : 'Criando agendamento...' }}</p>
+    </div>
+  </form>
+
+  <!-- Footer -->
+  <ng-template pTemplate="footer">
+    <div class="modal-footer">
+      <button 
+        pButton 
+        type="button" 
+        label="Cancelar" 
+        icon="pi pi-times" 
+        class="p-button-secondary"
+        (click)="hide()"
+        [disabled]="loading">
+      </button>
+      <button 
+        pButton 
+        type="submit" 
+        [label]="modoEdicao ? 'Atualizar Agendamento' : 'Criar Agendamento'"
+        icon="pi pi-check" 
+        class="p-button-success"
+        (click)="onSubmit()"
+        [disabled]="loading || agendamentoForm.invalid">
+      </button>
+    </div>
+  </ng-template>
+</p-dialog> 

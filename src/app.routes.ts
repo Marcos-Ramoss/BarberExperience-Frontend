@@ -67,6 +67,15 @@ export const appRoutes: Routes = [
                         loadComponent: () => import('./app/components/clientes/list/cliente-list.component').then(m => m.ClienteListComponent)
                     }
                 ]
+            },
+            {
+                path: 'agendamentos',
+                children: [
+                    {
+                        path: '',
+                        loadComponent: () => import('./app/components/agendamentos/list/agendamento-list.component').then(m => m.AgendamentoListComponent)
+                    }
+                ]
             }
         ]
     },

@@ -1,0 +1,249 @@
+<div class="agendamento-list-container">
+  <!-- Header -->
+  <div class="header">
+    <div class="title-section">
+      <h1>Agendamentos</h1>
+      <p>Gerencie os agendamentos das barbearias</p>
+    </div>
+    <div class="actions">
+      <button 
+        pButton 
+        type="button" 
+        label="Novo Agendamento" 
+        icon="pi pi-plus" 
+        class="p-button-success"
+        (click)="novoAgendamento()">
+      </button>
+    </div>
+  </div>
+
+  <!-- Filtros -->
+  <div class="filtros-container">
+    <form class="filtros-form">
+      <div class="filtros-row">
+        <!-- Busca por termo -->
+        <div class="filtro-item">
+          <label for="termoBusca">Buscar</label>
+          <input 
+            pInputText 
+            id="termoBusca"
+            type="text" 
+            placeholder="Buscar por cliente, profissional ou status..."
+            [(ngModel)]="termoBusca"
+            name="termoBusca"
+            class="w-full">
+        </div>
+
+        <!-- Filtro por cliente -->
+        <div class="filtro-item">
+          <label for="clienteId">Cliente</label>
+          <select 
+            id="clienteId"
+            [(ngModel)]="filtro.clienteId"
+            name="clienteId"
+            class="w-full">
+            <option *ngFor="let opcao of opcoesCliente" [value]="opcao.value">
+              {{ opcao.label }}
+            </option>
+          </select>
+        </div>
+
+        <!-- Filtro por profissional -->
+        <div class="filtro-item">
+          <label for="profissionalId">Profissional</label>
+          <select 
+            id="profissionalId"
+            [(ngModel)]="filtro.profissionalId"
+            name="profissionalId"
+            class="w-full">
+            <option *ngFor="let opcao of opcoesProfissional" [value]="opcao.value">
+              {{ opcao.label }}
+            </option>
+          </select>
+        </div>
+
+        <!-- Filtro por status -->
+        <div class="filtro-item">
+          <label for="status">Status</label>
+          <select 
+            id="status"
+            [(ngModel)]="filtro.status"
+            name="status"
+            class="w-full">
+            <option *ngFor="let opcao of opcoesStatus" [value]="opcao.value">
+              {{ opcao.label }}
+            </option>
+          </select>
+        </div>
+
+        <!-- Filtro por data início -->
+        <div class="filtro-item">
+          <label for="dataInicio">Data Início</label>
+          <input 
+            pInputText 
+            id="dataInicio"
+            type="date" 
+            [(ngModel)]="filtro.dataInicio"
+            name="dataInicio"
+            class="w-full">
+        </div>
+
+        <!-- Filtro por data fim -->
+        <div class="filtro-item">
+          <label for="dataFim">Data Fim</label>
+          <input 
+            pInputText 
+            id="dataFim"
+            type="date" 
+            [(ngModel)]="filtro.dataFim"
+            name="dataFim"
+            class="w-full">
+        </div>
+
+        <!-- Botões -->
+        <div class="filtro-buttons">
+          <button 
+            pButton 
+            type="button" 
+            label="Filtrar" 
+            icon="pi pi-search" 
+            class="p-button-success"
+            (click)="aplicarFiltros()">
+          </button>
+          <button 
+            pButton 
+            type="button" 
+            label="Limpar" 
+            icon="pi pi-times" 
+            class="p-button-secondary"
+            (click)="limparFiltros()">
+          </button>
+        </div>
+      </div>
+    </form>
+  </div>
+
+  <!-- Loading -->
+  <div *ngIf="loading" class="loading-container">
+    <p-progressSpinner></p-progressSpinner>
+    <p>Carregando agendamentos...</p>
+  </div>
+
+  <!-- Error -->
+  <div *ngIf="error && !loading" class="error-container">
+    <p-message severity="error" [text]="error"></p-message>
+  </div>
+
+  <!-- Tabela -->
+  <div *ngIf="!loading && !error" class="table-container">
+    <p-table 
+      [value]="agendamentosFiltradas" 
+      [paginator]="true" 
+      [rows]="10"
+      [showCurrentPageReport]="true"
+      currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} agendamentos"
+      [rowsPerPageOptions]="[5, 10, 25, 50]"
+      [loading]="loading"
+      styleClass="p-datatable-sm"
+      responsiveLayout="scroll">
+      
+      <!-- Coluna Cliente -->
+      <ng-template pTemplate="header">
+        <tr>
+          <th>Cliente</th>
+          <th>Profissional</th>
+          <th>Data/Hora</th>
+          <th>Serviços</th>
+          <th>Valor Total</th>
+          <th>Status</th>
+          <th>Ações</th>
+        </tr>
+      </ng-template>
+      
+      <!-- Linhas de dados -->
+      <ng-template pTemplate="body" let-agendamento>
+        <tr>
+          <td>
+            <div class="cliente-info">
+              <span class="nome">{{ agendamento.cliente.nome }}</span>
+              <span class="email">{{ agendamento.cliente.email }}</span>
+            </div>
+          </td>
+          <td>
+            <div class="profissional-info">
+              <span class="nome">{{ agendamento.profissional.nome }}</span>
+            </div>
+          </td>
+          <td>
+            <span class="data-hora">{{ formatarDataHora(agendamento.horario) }}</span>
+          </td>
+          <td>
+            <div class="servicos">
+              <span class="servicos-text">{{ formatarServicos(agendamento.servicos) }}</span>
+            </div>
+          </td>
+          <td>
+            <span class="valor-total">{{ calcularValorTotal(agendamento.servicos) }}</span>
+          </td>
+          <td>
+            <p-tag 
+              [value]="agendamento.status"
+              [severity]="getStatusSeverity(agendamento.status)">
+            </p-tag>
+          </td>
+          <td>
+            <div class="actions-cell">
+              <button 
+                pButton 
+                type="button" 
+                icon="pi pi-pencil" 
+                class="p-button-rounded p-button-text p-button-primary"
+                pTooltip="Editar"
+                (click)="editarAgendamento(agendamento)">
+              </button>
+              <button 
+                pButton 
+                type="button" 
+                icon="pi pi-trash" 
+                class="p-button-rounded p-button-text p-button-danger"
+                pTooltip="Excluir"
+                (click)="excluirAgendamento(agendamento)">
+              </button>
+            </div>
+          </td>
+        </tr>
+      </ng-template>
+      
+      <!-- Mensagem quando não há dados -->
+      <ng-template pTemplate="emptymessage">
+        <tr>
+          <td colspan="7" class="text-center">
+            <div class="empty-state">
+              <i class="pi pi-calendar" style="font-size: 3rem; color: #ccc;"></i>
+              <p>Nenhum agendamento encontrado</p>
+              <button 
+                pButton 
+                type="button" 
+                label="Adicionar Primeiro Agendamento" 
+                icon="pi pi-plus" 
+                class="p-button-primary"
+                (click)="novoAgendamento()">
+              </button>
+            </div>
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </div>
+
+  <!-- Modal -->
+  <app-agendamento-modal 
+    #agendamentoModal
+    (agendamentoCriado)="onAgendamentoCriado()"
+    (agendamentoEditado)="onAgendamentoEditado()">
+  </app-agendamento-modal>
+
+  <!-- Toast e Confirmação -->
+  <p-toast></p-toast>
+  <p-confirmDialog></p-confirmDialog>
+</div> 
