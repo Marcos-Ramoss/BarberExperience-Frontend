@@ -11,19 +11,7 @@ import {
   BarbeariaFilter
 } from '../dto/barbearia/barbearia.dto';
 
-/**
- * Repository para operações de Barbearia
- * 
- * Endpoints implementados no backend:
- * ✅ GET /barbearias - Listar todas
- * ✅ POST /barbearias - Criar nova
- * ✅ GET /barbearias/{id} - Buscar por ID
- * ✅ DELETE /barbearias/{id} - Excluir
- * 
- * Endpoints pendentes:
- * ❌ PUT /barbearias/{id} - Atualizar (usando mock temporariamente)
- * ❌ Endpoints específicos (configurações, relatórios, upload)
- */
+
 @Injectable({
   providedIn: 'root'
 })
