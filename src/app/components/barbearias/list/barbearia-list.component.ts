@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { Subject, takeUntil } from 'rxjs';
@@ -21,6 +21,9 @@ import { TagModule } from 'primeng/tag';
 import { BarbeariaService } from '../../../services/barbearia.service';
 import { BarbeariaResponse, BarbeariaFilter } from '../../../dto/barbearia/barbearia.dto';
 
+// Components
+import { BarbeariaModalComponent } from '../modal/barbearia-modal.component';
+
 @Component({
   selector: 'app-barbearia-list',
   standalone: true,
@@ -35,7 +38,8 @@ import { BarbeariaResponse, BarbeariaFilter } from '../../../dto/barbearia/barbe
     MessageModule,
     ConfirmDialogModule,
     TooltipModule,
-    TagModule
+    TagModule,
+    BarbeariaModalComponent
   ],
   providers: [ConfirmationService],
   templateUrl: './barbearia-list.component.html',
@@ -84,6 +88,9 @@ export class BarbeariaListComponent implements OnInit, OnDestroy {
   // Destroy subject
   private destroy$ = new Subject<void>();
 
+  // ViewChild para o modal
+  @ViewChild('barbeariaModal') barbeariaModal!: BarbeariaModalComponent;
+
   constructor(
     private barbeariaService: BarbeariaService,
     private router: Router,
@@ -94,6 +101,8 @@ export class BarbeariaListComponent implements OnInit, OnDestroy {
     this.carregarBarbearias();
     this.subscribeToObservables();
   }
+
+
 
   ngOnDestroy(): void {
     this.destroy$.next();
@@ -107,11 +116,8 @@ export class BarbeariaListComponent implements OnInit, OnDestroy {
     this.barbeariaService.carregarBarbearias()
       .pipe(takeUntil(this.destroy$))
       .subscribe({
-        next: (barbearias) => {
-          this.barbearias = barbearias;
-          this.barbeariasFiltradas = barbearias;
-          this.totalRecords = barbearias.length;
-          this.aplicarFiltros();
+        next: () => {
+          // O observable barbearias$ vai atualizar automaticamente
         },
         error: (error) => {
           console.error('Erro ao carregar barbearias:', error);
@@ -132,6 +138,15 @@ export class BarbeariaListComponent implements OnInit, OnDestroy {
     this.barbeariaService.error$
       .pipe(takeUntil(this.destroy$))
       .subscribe(error => this.error = error);
+
+    // Barbearias
+    this.barbeariaService.barbearias$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(barbearias => {
+        this.barbearias = barbearias;
+        this.barbeariasFiltradas = barbearias;
+        this.totalRecords = barbearias.length;
+      });
   }
 
   /**
@@ -182,14 +197,40 @@ export class BarbeariaListComponent implements OnInit, OnDestroy {
    * Navega para criar nova barbearia
    */
   novaBarbearia(): void {
-    this.router.navigate(['/barbearias/nova']);
+    // Abrir modal de nova barbearia
+    if (this.barbeariaModal) {
+      this.barbeariaModal.show();
+    } else {
+      console.error('Modal não encontrado');
+    }
+  }
+
+  onBarbeariaCriada(): void {
+    this.loading = true; // Forçar loading state
+    // Recarregar lista quando uma nova barbearia for criada
+    setTimeout(() => {
+      this.carregarBarbearias();
+    }, 2000);
+  }
+
+  onBarbeariaEditada(): void {
+    this.loading = true; // Forçar loading state
+    // Recarregar lista quando uma barbearia for editada
+    setTimeout(() => {
+      this.carregarBarbearias();
+    }, 2000);
   }
 
   /**
    * Navega para editar barbearia
    */
   editarBarbearia(barbearia: BarbeariaResponse): void {
-    this.router.navigate(['/barbearias/editar', barbearia.id]);
+    // Abrir modal de edição
+    if (this.barbeariaModal) {
+      this.barbeariaModal.show(barbearia);
+    } else {
+      console.error('Modal não encontrado');
+    }
   }
 
   /**

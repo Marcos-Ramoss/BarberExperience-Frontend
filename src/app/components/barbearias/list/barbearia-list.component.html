@@ -208,4 +208,11 @@
 
   <!-- Diálogo de confirmação -->
   <p-confirmDialog></p-confirmDialog>
-</div> 
+</div>
+
+<!-- Modal de Nova Barbearia -->
+<app-barbearia-modal 
+  #barbeariaModal 
+  (barbeariaCriada)="onBarbeariaCriada()"
+  (barbeariaEditada)="onBarbeariaEditada()">
+</app-barbearia-modal> 
