@@ -8,12 +8,17 @@ export interface LoginRequestDto {
 
 /**
  * DTO de resposta de login
+ * NOTA: Ajustado para ser compatível com a resposta atual do backend
  */
 export interface LoginResponseDto {
-  token: string;
-  refreshToken: string;
-  expiresIn: number;
-  user: UserDto;
+  token?: string;
+  refreshToken?: string;
+  expiresIn?: number;
+  user?: UserDto;
+  access_token?: string;
+  refresh_token?: string;
+  message?: string;
+  [key: string]: any; // Permite propriedades adicionais
 }
 
 /**

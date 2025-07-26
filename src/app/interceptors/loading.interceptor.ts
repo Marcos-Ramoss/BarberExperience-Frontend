@@ -1,57 +1,53 @@
-import { Injectable } from '@angular/core';
-import {
-  HttpRequest,
-  HttpHandler,
-  HttpEvent,
-  HttpInterceptor
-} from '@angular/common/http';
+import { HttpInterceptorFn, HttpRequest, HttpHandlerFn, HttpEvent } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { finalize } from 'rxjs/operators';
+import { finalize, tap } from 'rxjs/operators';
+import { BehaviorSubject } from 'rxjs';
+
+// Serviço global para controle de loading
+let activeRequests = 0;
+const loadingSubject = new BehaviorSubject<boolean>(false);
+
+/**
+ * Serviço para controle de loading global
+ */
+export class LoadingService {
+  static get loading$() {
+    return loadingSubject.asObservable();
+  }
+
+  static setLoading(loading: boolean) {
+    loadingSubject.next(loading);
+  }
+
+  static incrementRequests() {
+    activeRequests++;
+    if (activeRequests === 1) {
+      this.setLoading(true);
+    }
+  }
+
+  static decrementRequests() {
+    activeRequests--;
+    if (activeRequests === 0) {
+      this.setLoading(false);
+    }
+  }
+}
 
 /**
  * Interceptor para controle de loading global
  */
-@Injectable()
-export class LoadingInterceptor implements HttpInterceptor {
+export const loadingInterceptor: HttpInterceptorFn = (
+  request: HttpRequest<unknown>,
+  next: HttpHandlerFn
+): Observable<HttpEvent<unknown>> => {
+  // Incrementar contador de requisições ativas
+  LoadingService.incrementRequests();
 
-  private totalRequests = 0;
-
-  constructor() {}
-
-  intercept(request: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
-    this.totalRequests++;
-    this.showLoader();
-
-    return next.handle(request).pipe(
-      finalize(() => {
-        this.totalRequests--;
-        if (this.totalRequests === 0) {
-          this.hideLoader();
-        }
-      })
-    );
-  }
-
-  /**
-   * Mostrar loader
-   */
-  private showLoader(): void {
-    // Aqui você pode implementar a lógica para mostrar o loader
-    // Por exemplo, usando um serviço de loading global
-    console.log('Mostrando loader...');
-    
-    // Exemplo com PrimeNG ProgressSpinner
-    // this.loadingService.show();
-  }
-
-  /**
-   * Esconder loader
-   */
-  private hideLoader(): void {
-    // Aqui você pode implementar a lógica para esconder o loader
-    console.log('Escondendo loader...');
-    
-    // Exemplo com PrimeNG ProgressSpinner
-    // this.loadingService.hide();
-  }
-} 
+  return next(request).pipe(
+    finalize(() => {
+      // Decrementar contador quando a requisição terminar
+      LoadingService.decrementRequests();
+    })
+  );
+}; 

@@ -25,6 +25,15 @@ export const appRoutes: Routes = [
         loadComponent: () => import('./app/components/dashboard/dashboard.component').then(m => m.DashboardComponent)
     },
     {
+        path: 'barbearias',
+        children: [
+            {
+                path: '',
+                loadComponent: () => import('./app/components/barbearias/list/barbearia-list.component').then(m => m.BarbeariaListComponent)
+            }
+        ]
+    },
+    {
         path: 'home',
         loadComponent: () => import('./app.component').then(m => m.AppComponent)
     },

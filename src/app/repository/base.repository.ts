@@ -1,31 +1,38 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http';
-import { Observable, throwError } from 'rxjs';
+import { HttpClient, HttpParams, HttpHeaders } from '@angular/common/http';
+import { Observable, throwError, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
-import { 
-  PaginatedResponse
-} from '../dto/shared/response.dto';
-import { 
-  PaginationRequest
-} from '../dto/shared/pagination.dto';
+import { PaginatedResponse } from '../dto/shared/response.dto';
+import { PaginationRequest } from '../dto/shared/pagination.dto';
 
 /**
- * Classe base para repositórios
- * Implementa operações CRUD básicas
+ * Repository base abstrato com funcionalidades comuns
  */
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable()
 export abstract class BaseRepository<T, CreateDto, UpdateDto> {
-  
+
   protected abstract endpoint: string;
   protected baseUrl = environment.apiUrl;
 
   constructor(protected http: HttpClient) {}
 
   /**
-   * Buscar todos os registros
+   * Obter headers de autenticação
+   */
+  protected getAuthHeaders(extra?: HttpHeaders): HttpHeaders {
+    const token = localStorage.getItem('access_token');
+    if (!token) return extra || new HttpHeaders();
+    
+    if (!extra) {
+      return new HttpHeaders({ Authorization: `Bearer ${token}` });
+    } else {
+      return extra.set('Authorization', `Bearer ${token}`);
+    }
+  }
+
+  /**
+   * Buscar todos com paginação
    */
   findAll(pagination?: PaginationRequest): Observable<PaginatedResponse<T>> {
     let params = new HttpParams();
@@ -45,50 +52,65 @@ export abstract class BaseRepository<T, CreateDto, UpdateDto> {
       }
     }
 
-    return this.http.get<PaginatedResponse<T>>(`${this.baseUrl}/${this.endpoint}`, { params })
-      .pipe(
-        catchError(this.handleError)
-      );
+    return this.http.get<PaginatedResponse<T>>(
+      `${this.baseUrl}/${this.endpoint}`, 
+      { 
+        params,
+        headers: this.getAuthHeaders()
+      }
+    ).pipe(
+      catchError(this.handleError)
+    );
   }
 
   /**
    * Buscar por ID
    */
   findById(id: number): Observable<T> {
-    return this.http.get<T>(`${this.baseUrl}/${this.endpoint}/${id}`)
-      .pipe(
-        catchError(this.handleError)
-      );
+    return this.http.get<T>(
+      `${this.baseUrl}/${this.endpoint}/${id}`,
+      { headers: this.getAuthHeaders() }
+    ).pipe(
+      catchError(this.handleError)
+    );
   }
 
   /**
    * Criar novo registro
    */
   create(data: CreateDto): Observable<T> {
-    return this.http.post<T>(`${this.baseUrl}/${this.endpoint}`, data)
-      .pipe(
-        catchError(this.handleError)
-      );
+    return this.http.post<T>(
+      `${this.baseUrl}/${this.endpoint}`, 
+      data,
+      { headers: this.getAuthHeaders() }
+    ).pipe(
+      catchError(this.handleError)
+    );
   }
 
   /**
    * Atualizar registro
    */
   update(id: number, data: UpdateDto): Observable<T> {
-    return this.http.put<T>(`${this.baseUrl}/${this.endpoint}/${id}`, data)
-      .pipe(
-        catchError(this.handleError)
-      );
+    return this.http.put<T>(
+      `${this.baseUrl}/${this.endpoint}/${id}`, 
+      data,
+      { headers: this.getAuthHeaders() }
+    ).pipe(
+      catchError(this.handleError)
+    );
   }
 
   /**
    * Excluir registro
    */
   delete(id: number): Observable<void> {
-    return this.http.delete<void>(`${this.baseUrl}/${this.endpoint}/${id}`)
-      .pipe(
-        catchError(this.handleError)
-      );
+    return this.http.delete<void>(
+      `${this.baseUrl}/${this.endpoint}/${id}`,
+      { headers: this.getAuthHeaders() }
+    ).pipe(
+      catchError(this.handleError)
+    );
   }
 
   /**
@@ -120,52 +142,54 @@ export abstract class BaseRepository<T, CreateDto, UpdateDto> {
       }
     }
 
-    return this.http.get<PaginatedResponse<T>>(`${this.baseUrl}/${this.endpoint}`, { params })
-      .pipe(
-        catchError(this.handleError)
-      );
+    return this.http.get<PaginatedResponse<T>>(
+      `${this.baseUrl}/${this.endpoint}`, 
+      { 
+        params,
+        headers: this.getAuthHeaders()
+      }
+    ).pipe(
+      catchError(this.handleError)
+    );
   }
 
   /**
    * Buscar todos sem paginação
    */
   findAllSimple(): Observable<T[]> {
-    return this.http.get<T[]>(`${this.baseUrl}/${this.endpoint}/all`)
-      .pipe(
-        catchError(this.handleError)
-      );
+    return this.http.get<T[]>(
+      `${this.baseUrl}/${this.endpoint}`,
+      { headers: this.getAuthHeaders() }
+    ).pipe(
+      catchError(this.handleError)
+    );
   }
 
   /**
    * Verificar se existe
+   * NOTA: Usando GET em vez de HEAD para compatibilidade
    */
   exists(id: number): Observable<boolean> {
-    return this.http.head(`${this.baseUrl}/${this.endpoint}/${id}`)
-      .pipe(
-        map(() => true),
-        catchError(() => [false])
-      );
+    return this.http.get(
+      `${this.baseUrl}/${this.endpoint}/${id}`,
+      { headers: this.getAuthHeaders() }
+    ).pipe(
+      map(() => true),
+      catchError(() => of(false))
+    );
   }
 
   /**
    * Contar registros
+   * NOTA: Endpoint /count pode não existir no backend
    */
   count(filters?: any): Observable<number> {
-    let params = new HttpParams();
-    
-    if (filters) {
-      Object.keys(filters).forEach(key => {
-        if (filters[key] !== undefined && filters[key] !== null && filters[key] !== '') {
-          params = params.set(key, filters[key].toString());
-        }
-      });
-    }
-
-    return this.http.get<{ count: number }>(`${this.baseUrl}/${this.endpoint}/count`, { params })
-      .pipe(
-        map(response => response.count),
-        catchError(this.handleError)
-      );
+    // Por enquanto, vamos usar o endpoint principal e contar os resultados
+    // TODO: Implementar endpoint /count quando disponível no backend
+    return this.findAllSimple().pipe(
+      map(items => items.length),
+      catchError(this.handleError)
+    );
   }
 
   /**

@@ -1,12 +1,12 @@
 import { Injectable } from '@angular/core';
+import { Router } from '@angular/router';
 import { BehaviorSubject, Observable, of } from 'rxjs';
 import { tap, catchError, map } from 'rxjs/operators';
-import { Router } from '@angular/router';
 import { AuthRepository } from '../repository/auth.repository';
-import {
-  LoginRequestDto,
-  LoginResponseDto,
-  UserDto,
+import { 
+  LoginRequestDto, 
+  LoginResponseDto, 
+  UserDto, 
   UserRole
 } from '../dto/auth/login.dto';
 import {
@@ -14,14 +14,12 @@ import {
   RegisterResponseDto
 } from '../dto/auth/register.dto';
 
-/**
- * Serviço de autenticação
- */
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
 
+  // Observables para estado da aplicação
   private currentUserSubject = new BehaviorSubject<UserDto | null>(null);
   public currentUser$ = this.currentUserSubject.asObservable();
 
@@ -152,8 +150,13 @@ export class AuthService {
 
     return this.authRepository.refreshToken(refreshToken).pipe(
       tap(response => {
-        this.saveTokens(response.token, response.refreshToken);
-        this.currentUserSubject.next(response.user);
+        const accessToken = response.token || response.access_token;
+        const refreshTokenValue = response.refreshToken || response.refresh_token;
+        
+        if (accessToken) {
+          this.saveTokens(accessToken, refreshTokenValue || '');
+          this.currentUserSubject.next(response.user || null);
+        }
       }),
       catchError(error => {
         this.handleLogout();
@@ -246,10 +249,19 @@ export class AuthService {
    * Tratar sucesso do login
    */
   private handleLoginSuccess(response: LoginResponseDto): void {
-    this.saveTokens(response.token, response.refreshToken);
-    this.currentUserSubject.next(response.user);
-    this.isAuthenticatedSubject.next(true);
-    this.router.navigate(['/dashboard']);
+    // Extrair token da resposta (pode vir em diferentes formatos)
+    const accessToken = response.token || response.access_token;
+    const refreshToken = response.refreshToken || response.refresh_token;
+    
+    if (accessToken) {
+      this.saveTokens(accessToken, refreshToken || '');
+      this.currentUserSubject.next(response.user || null);
+      this.isAuthenticatedSubject.next(true);
+      this.router.navigate(['/dashboard']);
+    } else {
+      console.error('Token não encontrado na resposta:', response);
+      this.setError('Erro: Token não encontrado na resposta do servidor');
+    }
   }
 
   /**
