@@ -12,7 +12,8 @@ import { InputTextModule } from 'primeng/inputtext';
 import { CardModule } from 'primeng/card';
 import { TagModule } from 'primeng/tag';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
-import { ConfirmationService } from 'primeng/api';
+import { ToastModule } from 'primeng/toast';
+import { ConfirmationService, MessageService } from 'primeng/api';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { MessageModule } from 'primeng/message';
 
@@ -39,11 +40,12 @@ import { ServicoModalComponent } from '../modal/servico-modal.component';
     CardModule,
     TagModule,
     ConfirmDialogModule,
+    ToastModule,
     ProgressSpinnerModule,
     MessageModule,
     ServicoModalComponent
   ],
-  providers: [ConfirmationService],
+  providers: [ConfirmationService, MessageService],
   templateUrl: './servico-list.component.html',
   styleUrls: ['./servico-list.component.scss']
 })
@@ -79,7 +81,8 @@ export class ServicoListComponent implements OnInit, OnDestroy {
     private servicoService: ServicoService,
     private barbeariaService: BarbeariaService,
     private router: Router,
-    private confirmationService: ConfirmationService
+    private confirmationService: ConfirmationService,
+    private messageService: MessageService
   ) {}
 
   ngOnInit(): void {
@@ -230,31 +233,45 @@ export class ServicoListComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Confirma exclusão do serviço
+   * Confirma e exclui um serviço
    */
-  confirmarExclusao(servico: ServicoResponse): void {
+  excluirServico(servico: ServicoResponse): void {
     this.confirmationService.confirm({
       message: `Tem certeza que deseja excluir o serviço "${servico.nome}"?`,
       header: 'Confirmar Exclusão',
       icon: 'pi pi-exclamation-triangle',
       accept: () => {
-        this.excluirServico(servico.id);
+        this.executarExclusao(servico.id);
       }
     });
   }
 
   /**
-   * Exclui o serviço
+   * Executa a exclusão do serviço
    */
-  private excluirServico(id: number): void {
+  private executarExclusao(id: number): void {
     this.servicoService.excluirServico(id)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: () => {
-          console.log('Serviço excluído com sucesso');
+          this.messageService.add({
+            severity: 'success',
+            summary: 'Sucesso!',
+            detail: 'Serviço excluído com sucesso!',
+            life: 3000
+          });
+          // Recarregar lista após exclusão
+          setTimeout(() => {
+            this.carregarServicos();
+          }, 1000);
         },
         error: (error) => {
-          console.error('Erro ao excluir serviço:', error);
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Erro!',
+            detail: 'Erro ao excluir serviço. Tente novamente.',
+            life: 5000
+          });
         }
       });
   }

@@ -1,0 +1,145 @@
+<!-- Toast para mensagens -->
+<p-toast position="top-right"></p-toast>
+
+<!-- Modal de Cadastro -->
+<p-dialog 
+  [(visible)]="visible" 
+  [modal]="true" 
+  [closable]="true"
+  [draggable]="false"
+  [resizable]="false"
+  [header]="modoEdicao ? 'Editar Cliente' : 'Novo Cliente'"
+  [style]="{width: '90vw', maxWidth: '600px'}"
+  [breakpoints]="{'960px': '75vw', '641px': '90vw'}"
+  (onHide)="hide()">
+  
+  <form [formGroup]="clienteForm" (ngSubmit)="onSubmit()" class="modal-form">
+    
+    <!-- Informações Pessoais -->
+    <div class="form-section">
+      <h3 class="section-title">
+        <i class="pi pi-user"></i>
+        Informações Pessoais
+      </h3>
+      
+      <div class="form-row">
+        <div class="form-field">
+          <label for="nome">Nome Completo *</label>
+          <input 
+            id="nome"
+            type="text" 
+            pInputText 
+            formControlName="nome"
+            placeholder="Digite o nome completo"
+            [class.invalid]="isFieldInvalid('nome')">
+          <small class="error-message" *ngIf="isFieldInvalid('nome')">
+            {{ getFieldError('nome') }}
+          </small>
+        </div>
+        
+        <div class="form-field">
+          <label for="cpf">CPF *</label>
+          <p-inputMask 
+            id="cpf"
+            formControlName="cpf"
+            mask="999.999.999-99"
+            placeholder="000.000.000-00"
+            [class.invalid]="isFieldInvalid('cpf')">
+          </p-inputMask>
+          <small class="error-message" *ngIf="isFieldInvalid('cpf')">
+            {{ getFieldError('cpf') }}
+          </small>
+        </div>
+      </div>
+      
+      <div class="form-row">
+        <div class="form-field">
+          <label for="telefone">Telefone *</label>
+          <p-inputMask 
+            id="telefone"
+            formControlName="telefone"
+            mask="(99) 99999-9999"
+            placeholder="(00) 00000-0000"
+            [class.invalid]="isFieldInvalid('telefone')">
+          </p-inputMask>
+          <small class="error-message" *ngIf="isFieldInvalid('telefone')">
+            {{ getFieldError('telefone') }}
+          </small>
+        </div>
+        
+        <div class="form-field">
+          <label for="email">Email *</label>
+          <input 
+            id="email"
+            type="email" 
+            pInputText 
+            formControlName="email"
+            placeholder="exemplo@email.com"
+            [class.invalid]="isFieldInvalid('email')"
+            [disabled]="modoEdicao">
+          <small class="error-message" *ngIf="isFieldInvalid('email')">
+            {{ getFieldError('email') }}
+          </small>
+        </div>
+      </div>
+    </div>
+
+    <!-- Data de Nascimento -->
+    <div class="form-section">
+      <h3 class="section-title">
+        <i class="pi pi-calendar"></i>
+        Data de Nascimento
+      </h3>
+      
+      <div class="form-row">
+        <div class="form-field">
+          <label for="dataNascimento">Data de Nascimento *</label>
+          <input 
+            id="dataNascimento"
+            type="date" 
+            pInputText 
+            formControlName="dataNascimento"
+            [max]="getMaxDate()"
+            [class.invalid]="isFieldInvalid('dataNascimento')">
+          <small class="error-message" *ngIf="isFieldInvalid('dataNascimento')">
+            {{ getFieldError('dataNascimento') }}
+          </small>
+        </div>
+      </div>
+    </div>
+  </form>
+
+  <!-- Loading -->
+  <div class="loading-overlay" *ngIf="loading">
+    <p-progressSpinner 
+      strokeWidth="4" 
+      fill="var(--surface-color)" 
+      animationDuration=".5s">
+    </p-progressSpinner>
+    <p>{{ modoEdicao ? 'Atualizando cliente...' : 'Cadastrando cliente...' }}</p>
+  </div>
+
+  <!-- Footer do Modal -->
+  <ng-template pTemplate="footer">
+    <div class="modal-footer">
+      <button 
+        pButton 
+        type="button" 
+        label="Cancelar" 
+        class="p-button-text"
+        (click)="hide()"
+        [disabled]="loading">
+      </button>
+      
+      <button 
+        pButton 
+        type="submit" 
+        [label]="modoEdicao ? 'Atualizar Cliente' : 'Cadastrar Cliente'" 
+        icon="pi pi-check"
+        class="p-button-success"
+        (click)="onSubmit()"
+        [disabled]="loading || clienteForm.invalid">
+      </button>
+    </div>
+  </ng-template>
+</p-dialog> 

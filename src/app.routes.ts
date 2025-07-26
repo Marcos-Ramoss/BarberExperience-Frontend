@@ -58,6 +58,15 @@ export const appRoutes: Routes = [
                         loadComponent: () => import('./app/components/profissionais/list/profissional-list.component').then(m => m.ProfissionalListComponent)
                     }
                 ]
+            },
+            {
+                path: 'clientes',
+                children: [
+                    {
+                        path: '',
+                        loadComponent: () => import('./app/components/clientes/list/cliente-list.component').then(m => m.ClienteListComponent)
+                    }
+                ]
             }
         ]
     },

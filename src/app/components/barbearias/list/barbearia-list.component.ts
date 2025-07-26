@@ -95,7 +95,8 @@ export class BarbeariaListComponent implements OnInit, OnDestroy {
   constructor(
     private barbeariaService: BarbeariaService,
     private router: Router,
-    private confirmationService: ConfirmationService
+    private confirmationService: ConfirmationService,
+    private messageService: MessageService
   ) {}
 
   ngOnInit(): void {
@@ -208,6 +209,7 @@ export class BarbeariaListComponent implements OnInit, OnDestroy {
 
   onBarbeariaCriada(): void {
     this.loading = true; // Forçar loading state
+    this.messageService.add({ severity: 'success', summary: 'Sucesso', detail: 'Barbearia criada com sucesso!' });
     // Recarregar lista quando uma nova barbearia for criada
     setTimeout(() => {
       this.carregarBarbearias();
@@ -216,6 +218,7 @@ export class BarbeariaListComponent implements OnInit, OnDestroy {
 
   onBarbeariaEditada(): void {
     this.loading = true; // Forçar loading state
+    this.messageService.add({ severity: 'success', summary: 'Sucesso', detail: 'Barbearia editada com sucesso!' });
     // Recarregar lista quando uma barbearia for editada
     setTimeout(() => {
       this.carregarBarbearias();
@@ -242,34 +245,45 @@ export class BarbeariaListComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Confirma exclusão da barbearia
+   * Confirma e exclui uma barbearia
    */
-  confirmarExclusao(barbearia: BarbeariaResponse): void {
+  excluirBarbearia(barbearia: BarbeariaResponse): void {
     this.confirmationService.confirm({
       message: `Tem certeza que deseja excluir a barbearia "${barbearia.nome}"?`,
       header: 'Confirmar Exclusão',
       icon: 'pi pi-exclamation-triangle',
-      acceptLabel: 'Sim',
-      rejectLabel: 'Não',
       accept: () => {
-        this.excluirBarbearia(barbearia.id);
+        this.executarExclusao(barbearia.id);
       }
     });
   }
 
   /**
-   * Exclui a barbearia
+   * Executa a exclusão da barbearia
    */
-  private excluirBarbearia(id: number): void {
+  private executarExclusao(id: number): void {
     this.barbeariaService.excluirBarbearia(id)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: () => {
-          // A lista já é atualizada automaticamente pelo service
-          console.log('Barbearia excluída com sucesso');
+          this.messageService.add({
+            severity: 'success',
+            summary: 'Sucesso!',
+            detail: 'Barbearia excluída com sucesso!',
+            life: 3000
+          });
+          // Recarregar lista após exclusão
+          setTimeout(() => {
+            this.carregarBarbearias();
+          }, 1000);
         },
         error: (error) => {
-          console.error('Erro ao excluir barbearia:', error);
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Erro!',
+            detail: 'Erro ao excluir barbearia. Tente novamente.',
+            life: 5000
+          });
         }
       });
   }

@@ -185,7 +185,7 @@
                 icon="pi pi-trash" 
                 class="p-button-text p-button-sm p-button-danger"
                 pTooltip="Excluir"
-                (click)="confirmarExclusao(servico)">
+                (click)="excluirServico(servico)">
               </button>
             </div>
           </td>
@@ -217,6 +217,9 @@
 
   <!-- Diálogo de confirmação -->
   <p-confirmDialog></p-confirmDialog>
+  
+  <!-- Toast -->
+  <p-toast></p-toast>
 </div>
 
 <!-- Modal de Serviço -->

@@ -22,7 +22,7 @@ export interface CriarClienteRequest {
 }
 
 /**
- * DTO de atualização de cliente
+ * DTO de atualização de cliente (legado)
  */
 export interface UpdateClienteRequest {
   nome?: string;
@@ -33,12 +33,13 @@ export interface UpdateClienteRequest {
 }
 
 /**
- * DTO de cliente simplificado (usado em agendamentos)
+ * DTO de atualização de cliente (conforme swagger.json)
  */
-export interface ClienteDto {
-  id: number;
+export interface AtualizarClienteRequest {
   nome: string;
-  email: string;
+  cpf: string;
+  telefone: string;
+  dataNascimento: string;
 }
 
 /**
@@ -48,7 +49,16 @@ export interface ClienteFilter {
   nome?: string;
   email?: string;
   cpf?: string;
-  ativo?: boolean;
+  dataNascimento?: string;
+}
+
+/**
+ * DTO para exibição de cliente (simplificado)
+ */
+export interface ClienteDto {
+  id: number;
+  nome: string;
+  email: string;
 }
 
 /**

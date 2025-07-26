@@ -1,18 +1,18 @@
-<div class="barbearia-list-container fade-in">
+<div class="cliente-list-container fade-in">
   <!-- Header -->
   <div class="page-header">
     <div class="header-content">
       <div class="title-section">
-        <h1>Barbearias</h1>
-        <p>Gerencie as barbearias cadastradas no sistema</p>
+        <h1>Clientes</h1>
+        <p>Gerencie os clientes cadastrados no sistema</p>
       </div>
       <div class="header-actions">
         <button 
           pButton 
-          label="+ Nova Barbearia" 
+          label="+ Novo Cliente" 
           icon="pi pi-plus" 
           class="p-button-success"
-          (click)="novaBarbearia()">
+          (click)="novoCliente()">
         </button>
       </div>
     </div>
@@ -35,29 +35,29 @@
             class="w-full">
         </div>
 
-        <!-- Filtro por estado -->
+        <!-- Filtro por email -->
         <div class="filtro-item">
-          <label for="estado">Estado</label>
+          <label for="email">Email</label>
           <input 
             pInputText 
-            id="estado"
-            type="text" 
-            placeholder="Ex: SP, RJ, MG..."
-            [(ngModel)]="filtro.estado"
-            name="estado"
+            id="email"
+            type="email" 
+            placeholder="Filtrar por email..."
+            [(ngModel)]="filtro.email"
+            name="email"
             class="w-full">
         </div>
 
-        <!-- Filtro por cidade -->
+        <!-- Filtro por CPF -->
         <div class="filtro-item">
-          <label for="cidade">Cidade</label>
+          <label for="cpf">CPF</label>
           <input 
             pInputText 
-            id="cidade"
+            id="cpf"
             type="text" 
-            placeholder="Nome da cidade..."
-            [(ngModel)]="filtro.cidade"
-            name="cidade"
+            placeholder="Filtrar por CPF..."
+            [(ngModel)]="filtro.cpf"
+            name="cpf"
             class="w-full">
         </div>
 
@@ -87,7 +87,7 @@
   <!-- Loading -->
   <div *ngIf="loading" class="loading-container">
     <p-progressSpinner></p-progressSpinner>
-    <p>Carregando barbearias...</p>
+    <p>Carregando clientes...</p>
   </div>
 
   <!-- Error -->
@@ -98,11 +98,11 @@
   <!-- Tabela -->
   <div *ngIf="!loading && !error" class="table-container">
     <p-table 
-      [value]="barbeariasFiltradas" 
+      [value]="clientesFiltradas" 
       [paginator]="true" 
       [rows]="10"
       [showCurrentPageReport]="true"
-      currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} barbearias"
+      currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} clientes"
       [rowsPerPageOptions]="[5, 10, 25, 50]"
       [loading]="loading"
       styleClass="p-datatable-sm"
@@ -112,51 +112,32 @@
       <ng-template pTemplate="header">
         <tr>
           <th>Nome</th>
-          <th>CNPJ</th>
-          <th>Endereço</th>
-          <th>Contato</th>
-          <th>Horário</th>
-          <th>Status</th>
+          <th>CPF</th>
+          <th>Telefone</th>
+          <th>Email</th>
+          <th>Data Nascimento</th>
+          <th>Idade</th>
           <th>Ações</th>
         </tr>
       </ng-template>
 
-      <!-- Linhas da tabela -->
-      <ng-template pTemplate="body" let-barbearia>
+      <!-- Linhas de dados -->
+      <ng-template pTemplate="body" let-cliente>
         <tr>
-          <!-- Nome -->
           <td>
-            <div class="barbearia-info">
-              <span class="nome">{{ barbearia.nome }}</span>
-              <span class="email">{{ barbearia.email }}</span>
+            <div class="cliente-info">
+              <span class="nome">{{ cliente.nome }}</span>
             </div>
           </td>
-
-          <!-- CNPJ -->
-          <td>{{ barbearia.cnpj }}</td>
-
-          <!-- Endereço -->
+          <td>{{ cliente.cpf }}</td>
+          <td>{{ cliente.telefone }}</td>
+          <td>{{ cliente.email }}</td>
+          <td>{{ formatarDataNascimento(cliente.dataNascimento) }}</td>
           <td>
-            <div class="endereco">
-              {{ formatarEndereco(barbearia) }}
-            </div>
+            <span class="idade-tag">
+              {{ calcularIdade(cliente.dataNascimento) }} anos
+            </span>
           </td>
-
-          <!-- Contato -->
-          <td>{{ barbearia.telefone }}</td>
-
-          <!-- Horário -->
-          <td>{{ formatarHorario(barbearia) }}</td>
-
-          <!-- Status -->
-          <td>
-            <p-tag 
-              [value]="getStatusBarbearia(barbearia).label"
-              [severity]="getStatusBarbearia(barbearia).severity">
-            </p-tag>
-          </td>
-
-          <!-- Ações -->
           <td>
             <div class="actions-cell">
               <button 
@@ -165,7 +146,7 @@
                 icon="pi pi-pencil" 
                 class="p-button-rounded p-button-text p-button-primary"
                 pTooltip="Editar"
-                (click)="editarBarbearia(barbearia)">
+                (click)="editarCliente(cliente)">
               </button>
               <button 
                 pButton 
@@ -173,26 +154,26 @@
                 icon="pi pi-trash" 
                 class="p-button-rounded p-button-text p-button-danger"
                 pTooltip="Excluir"
-                (click)="excluirBarbearia(barbearia)">
+                (click)="excluirCliente(cliente)">
               </button>
             </div>
           </td>
         </tr>
       </ng-template>
-
-      <!-- Template para quando não há dados -->
+      
+      <!-- Mensagem quando não há dados -->
       <ng-template pTemplate="emptymessage">
         <tr>
           <td colspan="7" class="text-center">
             <div class="empty-state">
-              <i class="pi pi-building" style="font-size: 3rem; color: #ccc;"></i>
-              <p>Nenhuma barbearia encontrada</p>
+              <i class="pi pi-user" style="font-size: 3rem; color: #ccc;"></i>
+              <p>Nenhum cliente encontrado</p>
               <button 
                 pButton 
-                label="Nova Barbearia" 
+                label="Novo Cliente" 
                 icon="pi pi-plus" 
                 class="p-button-outlined"
-                (click)="novaBarbearia()">
+                (click)="novoCliente()">
               </button>
             </div>
           </td>
@@ -201,12 +182,12 @@
     </p-table>
   </div>
 
-  <!-- Modal de Barbearia -->
-  <app-barbearia-modal 
-    #barbeariaModal
-    (barbeariaCriada)="onBarbeariaCriada()"
-    (barbeariaEditada)="onBarbeariaEditada()">
-  </app-barbearia-modal>
+  <!-- Modal de Cliente -->
+  <app-cliente-modal 
+    #clienteModal
+    (clienteCriado)="onClienteCriado()"
+    (clienteEditado)="onClienteEditado()">
+  </app-cliente-modal>
 
   <!-- Toast para mensagens -->
   <p-toast></p-toast>
