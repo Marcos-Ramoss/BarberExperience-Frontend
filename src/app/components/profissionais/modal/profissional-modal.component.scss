@@ -1,0 +1,207 @@
+.profissional-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+
+  .form-field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+
+    .form-label {
+      font-weight: 500;
+      color: var(--text-color);
+      font-size: 0.875rem;
+    }
+
+    .form-input {
+      width: 100%;
+      padding: 0.75rem;
+      border: 1px solid var(--surface-border);
+      border-radius: var(--border-radius);
+      background: var(--surface-ground);
+      color: var(--text-color);
+      font-size: 0.875rem;
+      transition: all 0.2s;
+
+      &:focus {
+        outline: none;
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 2px var(--primary-color-alpha-20);
+      }
+
+      &.invalid {
+        border-color: var(--red-500);
+        box-shadow: 0 0 0 2px var(--red-500-alpha-20);
+      }
+
+      &::placeholder {
+        color: var(--text-color-secondary);
+      }
+    }
+
+    .error-message {
+      color: var(--red-500);
+      font-size: 0.75rem;
+      margin-top: 0.25rem;
+    }
+  }
+}
+
+// MultiSelect customização
+::ng-deep {
+  .p-multiselect {
+    width: 100%;
+    
+    &.p-multiselect-chip {
+      .p-multiselect-token {
+        background: var(--primary-color-alpha-10);
+        color: var(--primary-color);
+        border-radius: var(--border-radius-sm);
+        padding: 0.25rem 0.5rem;
+        margin: 0.125rem;
+        font-size: 0.75rem;
+      }
+    }
+
+    .p-multiselect-label {
+      padding: 0.75rem;
+      color: var(--text-color);
+    }
+
+    .p-multiselect-trigger {
+      color: var(--text-color-secondary);
+    }
+
+    &.p-focus {
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 2px var(--primary-color-alpha-20);
+    }
+  }
+
+  .p-multiselect-panel {
+    background: var(--surface-overlay);
+    border: 1px solid var(--surface-border);
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow-lg);
+
+    .p-multiselect-items {
+      .p-multiselect-item {
+        color: var(--text-color);
+        padding: 0.75rem 1rem;
+        transition: background-color 0.2s;
+
+        &:hover {
+          background: var(--surface-hover);
+        }
+
+        &.p-highlight {
+          background: var(--primary-color-alpha-10);
+          color: var(--primary-color);
+        }
+      }
+    }
+  }
+}
+
+// Dialog customização
+::ng-deep {
+  .p-dialog {
+    .p-dialog-header {
+      background: var(--surface-section);
+      border-bottom: 1px solid var(--surface-border);
+      padding: 1.5rem;
+
+      .p-dialog-title {
+        color: var(--text-color);
+        font-weight: 600;
+        font-size: 1.25rem;
+      }
+
+      .p-dialog-header-icon {
+        color: var(--text-color-secondary);
+        
+        &:hover {
+          background: var(--surface-hover);
+          color: var(--text-color);
+        }
+      }
+    }
+
+    .p-dialog-content {
+      padding: 1.5rem;
+      background: var(--surface-card);
+    }
+
+    .p-dialog-footer {
+      background: var(--surface-section);
+      border-top: 1px solid var(--surface-border);
+      padding: 1rem 1.5rem;
+
+      .dialog-footer {
+        display: flex;
+        justify-content: flex-end;
+        gap: 0.5rem;
+      }
+    }
+  }
+}
+
+// Loading overlay
+.loading-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.8);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  border-radius: var(--border-radius);
+
+  p {
+    margin-top: 1rem;
+    color: var(--text-color-secondary);
+    font-size: 0.875rem;
+  }
+}
+
+// Responsividade
+@media (max-width: 768px) {
+  .profissional-form {
+    gap: 1rem;
+
+    .form-field {
+      .form-input {
+        padding: 0.625rem;
+        font-size: 1rem; // Evita zoom no iOS
+      }
+    }
+  }
+
+  ::ng-deep {
+    .p-dialog {
+      width: 95vw !important;
+      max-width: 500px;
+
+      .p-dialog-content {
+        padding: 1rem;
+      }
+
+      .p-dialog-footer {
+        padding: 1rem;
+
+        .dialog-footer {
+          flex-direction: column;
+          
+          button {
+            width: 100%;
+          }
+        }
+      }
+    }
+  }
+} 

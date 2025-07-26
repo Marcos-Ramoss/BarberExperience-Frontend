@@ -1,0 +1,200 @@
+<div class="profissional-list-container">
+  <!-- Header -->
+  <div class="header">
+    <div class="title-section">
+      <h1>Profissionais</h1>
+      <p>Gerencie os profissionais das barbearias</p>
+    </div>
+    <div class="actions">
+      <button 
+        pButton 
+        type="button" 
+        label="Novo Profissional" 
+        icon="pi pi-plus" 
+        class="p-button-success"
+        (click)="novoProfissional()">
+      </button>
+    </div>
+  </div>
+
+  <!-- Filtros -->
+  <div class="filtros-container">
+    <form class="filtros-form">
+      <div class="filtros-row">
+        <!-- Busca por nome -->
+        <div class="filtro-item">
+          <label for="termoBusca">Nome</label>
+          <input 
+            pInputText 
+            id="termoBusca"
+            type="text" 
+            placeholder="Buscar por nome..."
+            [(ngModel)]="termoBusca"
+            name="termoBusca"
+            class="w-full">
+        </div>
+
+        <!-- Filtro por especialidade -->
+        <div class="filtro-item">
+          <label for="especialidade">Especialidade</label>
+          <select 
+            id="especialidade"
+            [(ngModel)]="filtro.especialidade"
+            name="especialidade"
+            class="w-full">
+            <option value="">Todas as especialidades</option>
+            <option *ngFor="let esp of especialidades" [value]="esp.value">
+              {{ esp.label }}
+            </option>
+          </select>
+        </div>
+
+        <!-- Filtro por barbearia -->
+        <div class="filtro-item">
+          <label for="barbeariaId">Barbearia</label>
+          <select 
+            id="barbeariaId"
+            [(ngModel)]="filtro.barbeariaId"
+            name="barbeariaId"
+            class="w-full">
+            <option *ngFor="let opcao of opcoesBarbearia" [value]="opcao.value">
+              {{ opcao.label }}
+            </option>
+          </select>
+        </div>
+
+        <!-- Botões -->
+        <div class="filtro-buttons">
+          <button 
+            pButton 
+            type="button" 
+            label="Filtrar" 
+            icon="pi pi-search" 
+            class="p-button-success"
+            (click)="aplicarFiltros()">
+          </button>
+          <button 
+            pButton 
+            type="button" 
+            label="Limpar" 
+            icon="pi pi-times" 
+            class="p-button-secondary"
+            (click)="limparFiltros()">
+          </button>
+        </div>
+      </div>
+    </form>
+  </div>
+
+  <!-- Loading -->
+  <div *ngIf="loading" class="loading-container">
+    <p-progressSpinner></p-progressSpinner>
+    <p>Carregando profissionais...</p>
+  </div>
+
+  <!-- Error -->
+  <div *ngIf="error && !loading" class="error-container">
+    <p-message severity="error" [text]="error"></p-message>
+  </div>
+
+  <!-- Tabela -->
+  <div *ngIf="!loading && !error" class="table-container">
+    <p-table 
+      [value]="profissionaisFiltradas" 
+      [paginator]="true" 
+      [rows]="10"
+      [showCurrentPageReport]="true"
+      currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} profissionais"
+      [rowsPerPageOptions]="[5, 10, 25, 50]"
+      [loading]="loading"
+      styleClass="p-datatable-sm"
+      responsiveLayout="scroll">
+      
+      <!-- Coluna Nome -->
+      <ng-template pTemplate="header">
+        <tr>
+          <th>Nome</th>
+          <th>CPF</th>
+          <th>Telefone</th>
+          <th>Email</th>
+          <th>Especialidades</th>
+          <th>Barbearia</th>
+          <th>Ações</th>
+        </tr>
+      </ng-template>
+      
+      <!-- Linhas de dados -->
+      <ng-template pTemplate="body" let-profissional>
+        <tr>
+          <td>
+            <div class="profissional-info">
+              <span class="nome">{{ profissional.nome }}</span>
+            </div>
+          </td>
+          <td>{{ profissional.cpf }}</td>
+          <td>{{ profissional.telefone }}</td>
+          <td>{{ profissional.email }}</td>
+          <td>
+            <div class="especialidades">
+              <span *ngFor="let esp of profissional.especialidades" class="especialidade-tag">
+                {{ formatarEspecialidades([esp]) }}
+              </span>
+            </div>
+          </td>
+          <td>{{ getNomeBarbearia(profissional.barbeariaId) }}</td>
+          <td>
+            <div class="actions-cell">
+              <button 
+                pButton 
+                type="button" 
+                icon="pi pi-pencil" 
+                class="p-button-rounded p-button-text p-button-primary"
+                pTooltip="Editar"
+                (click)="editarProfissional(profissional)">
+              </button>
+              <button 
+                pButton 
+                type="button" 
+                icon="pi pi-trash" 
+                class="p-button-rounded p-button-text p-button-danger"
+                pTooltip="Excluir"
+                (click)="excluirProfissional(profissional)">
+              </button>
+            </div>
+          </td>
+        </tr>
+      </ng-template>
+      
+      <!-- Mensagem quando não há dados -->
+      <ng-template pTemplate="emptymessage">
+        <tr>
+          <td colspan="7" class="text-center">
+            <div class="empty-state">
+              <i class="pi pi-users" style="font-size: 3rem; color: #ccc;"></i>
+              <p>Nenhum profissional encontrado</p>
+              <button 
+                pButton 
+                type="button" 
+                label="Adicionar Primeiro Profissional" 
+                icon="pi pi-plus" 
+                class="p-button-primary"
+                (click)="novoProfissional()">
+              </button>
+            </div>
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </div>
+
+  <!-- Modal -->
+  <app-profissional-modal 
+    #profissionalModal
+    (profissionalCriado)="onProfissionalCriado()"
+    (profissionalEditado)="onProfissionalEditado()">
+  </app-profissional-modal>
+
+  <!-- Toast e Confirmação -->
+  <p-toast></p-toast>
+  <p-confirmDialog></p-confirmDialog>
+</div> 

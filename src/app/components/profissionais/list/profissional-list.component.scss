@@ -1,0 +1,264 @@
+.profissional-list-container {
+  padding: 2rem;
+  background: var(--surface-ground);
+  min-height: calc(100vh - var(--topbar-height));
+  color: var(--text-color);
+
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    padding: 1.5rem;
+    background: var(--surface-card);
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow);
+
+    .title-section {
+      h1 {
+        margin: 0 0 0.5rem 0;
+        font-size: 1.75rem;
+        font-weight: 600;
+        color: var(--text-color);
+      }
+
+      p {
+        margin: 0;
+        color: var(--text-color-secondary);
+        font-size: 0.875rem;
+      }
+    }
+
+    .actions {
+      button {
+        margin-left: 0.5rem;
+      }
+    }
+  }
+
+  .filtros-container {
+    background: var(--surface-card);
+    border-radius: var(--border-radius);
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    box-shadow: var(--card-shadow);
+    border: 1px solid var(--surface-border);
+
+    .filtros-form {
+      .filtros-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr auto;
+        gap: 1rem;
+        align-items: end;
+
+        @media (max-width: 768px) {
+          grid-template-columns: 1fr;
+          gap: 0.75rem;
+        }
+
+        .filtro-item {
+          display: flex;
+          flex-direction: column;
+          gap: 0.5rem;
+
+          label {
+            font-weight: 600;
+            color: var(--text-color);
+            font-size: 0.875rem;
+          }
+
+          input, select {
+            padding: 0.75rem;
+            border: 1px solid var(--surface-border);
+            border-radius: var(--border-radius);
+            background: var(--surface-ground);
+            color: var(--text-color);
+            transition: all 0.2s ease;
+
+            &:focus {
+              outline: none;
+              border-color: var(--primary-color);
+              box-shadow: 0 0 0 2px var(--primary-color-alpha-20);
+            }
+          }
+        }
+
+        .filtro-buttons {
+          display: flex;
+          gap: 0.5rem;
+          align-items: end;
+
+          @media (max-width: 768px) {
+            justify-content: stretch;
+            
+            button {
+              flex: 1;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  .loading-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 3rem;
+    background: var(--surface-card);
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow);
+
+    p {
+      margin-top: 1rem;
+      color: var(--text-color-secondary);
+    }
+  }
+
+  .error-container {
+    margin-bottom: 1rem;
+  }
+
+  .table-container {
+    background: var(--surface-card);
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow);
+    overflow: hidden;
+
+    ::ng-deep {
+      .p-datatable {
+        .p-datatable-header {
+          background: var(--surface-section);
+          border-bottom: 1px solid var(--surface-border);
+          padding: 1rem 1.5rem;
+        }
+
+        .p-datatable-thead > tr > th {
+          background: var(--surface-section);
+          border-bottom: 1px solid var(--surface-border);
+          color: var(--text-color);
+          font-weight: 600;
+          padding: 1rem;
+          text-align: left;
+        }
+
+        .p-datatable-tbody > tr {
+          transition: background-color 0.2s;
+
+          &:hover {
+            background: var(--surface-hover);
+          }
+
+          > td {
+            padding: 1rem;
+            border-bottom: 1px solid var(--surface-border);
+            color: var(--text-color);
+          }
+        }
+
+        .p-paginator {
+          background: var(--surface-section);
+          border-top: 1px solid var(--surface-border);
+          padding: 1rem 1.5rem;
+        }
+      }
+    }
+
+    .profissional-info {
+      .nome {
+        font-weight: 500;
+        color: var(--text-color);
+      }
+    }
+
+    .especialidades {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.25rem;
+
+      .especialidade-tag {
+        background: var(--primary-color-alpha-10);
+        color: var(--primary-color);
+        padding: 0.25rem 0.5rem;
+        border-radius: var(--border-radius-sm);
+        font-size: 0.75rem;
+        font-weight: 500;
+      }
+    }
+
+    .actions-cell {
+      display: flex;
+      gap: 0.5rem;
+      justify-content: center;
+
+      button {
+        width: 2rem;
+        height: 2rem;
+      }
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 3rem 1rem;
+
+      i {
+        margin-bottom: 1rem;
+      }
+
+      p {
+        margin: 1rem 0;
+        color: var(--text-color-secondary);
+        font-size: 1rem;
+      }
+    }
+  }
+}
+
+// Responsividade
+@media (max-width: 1024px) {
+  .profissional-list-container {
+    padding: 1rem;
+
+    .header {
+      flex-direction: column;
+      gap: 1rem;
+      text-align: center;
+
+      .actions {
+        width: 100%;
+        
+        button {
+          width: 100%;
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .profissional-list-container {
+    .table-container {
+      ::ng-deep {
+        .p-datatable {
+          .p-datatable-thead {
+            display: none;
+          }
+
+          .p-datatable-tbody > tr > td {
+            display: block;
+            text-align: left;
+            padding: 0.5rem 1rem;
+            border: none;
+
+            &:before {
+              content: attr(data-label) ": ";
+              font-weight: 600;
+              color: var(--text-color-secondary);
+            }
+          }
+        }
+      }
+    }
+  }
+} 

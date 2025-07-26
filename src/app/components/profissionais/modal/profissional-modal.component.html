@@ -1,0 +1,159 @@
+<p-dialog 
+  [(visible)]="visible" 
+  [modal]="true" 
+  [draggable]="false" 
+  [resizable]="false"
+  [style]="{width: '600px'}"
+  [header]="modoEdicao ? 'Editar Profissional' : 'Novo Profissional'"
+  (onHide)="hide()">
+  
+  <form [formGroup]="profissionalForm" (ngSubmit)="onSubmit()" class="profissional-form">
+    
+    <!-- Nome -->
+    <div class="form-field">
+      <label for="nome" class="form-label">Nome Completo *</label>
+      <input 
+        pInputText 
+        id="nome" 
+        formControlName="nome" 
+        placeholder="Digite o nome completo"
+        class="form-input"
+        [class.invalid]="isFieldInvalid('nome')">
+      <small 
+        *ngIf="isFieldInvalid('nome')" 
+        class="error-message">
+        {{ getFieldError('nome') }}
+      </small>
+    </div>
+
+    <!-- CPF -->
+    <div class="form-field">
+      <label for="cpf" class="form-label">CPF *</label>
+      <p-inputMask 
+        id="cpf" 
+        formControlName="cpf" 
+        mask="999.999.999-99"
+        placeholder="000.000.000-00"
+        class="form-input"
+        [class.invalid]="isFieldInvalid('cpf')">
+      </p-inputMask>
+      <small 
+        *ngIf="isFieldInvalid('cpf')" 
+        class="error-message">
+        {{ getFieldError('cpf') }}
+      </small>
+    </div>
+
+    <!-- Telefone -->
+    <div class="form-field">
+      <label for="telefone" class="form-label">Telefone *</label>
+      <p-inputMask 
+        id="telefone" 
+        formControlName="telefone" 
+        mask="(99) 99999-9999"
+        placeholder="(00) 00000-0000"
+        class="form-input"
+        [class.invalid]="isFieldInvalid('telefone')">
+      </p-inputMask>
+      <small 
+        *ngIf="isFieldInvalid('telefone')" 
+        class="error-message">
+        {{ getFieldError('telefone') }}
+      </small>
+    </div>
+
+    <!-- Email -->
+    <div class="form-field">
+      <label for="email" class="form-label">Email *</label>
+      <input 
+        pInputText 
+        id="email" 
+        formControlName="email" 
+        type="email"
+        placeholder="profissional@email.com"
+        class="form-input"
+        [class.invalid]="isFieldInvalid('email')">
+      <small 
+        *ngIf="isFieldInvalid('email')" 
+        class="error-message">
+        {{ getFieldError('email') }}
+      </small>
+    </div>
+
+    <!-- Especialidades -->
+    <div class="form-field">
+      <label for="especialidades" class="form-label">Especialidades *</label>
+      <p-multiSelect 
+        id="especialidades" 
+        formControlName="especialidades"
+        [options]="especialidades"
+        optionLabel="label"
+        optionValue="value"
+        placeholder="Selecione as especialidades"
+        class="form-input"
+        [class.invalid]="isFieldInvalid('especialidades')"
+        [showClear]="true">
+      </p-multiSelect>
+      <small 
+        *ngIf="isFieldInvalid('especialidades')" 
+        class="error-message">
+        {{ getFieldError('especialidades') }}
+      </small>
+    </div>
+
+    <!-- Barbearia -->
+    <div class="form-field">
+      <label for="barbeariaId" class="form-label">Barbearia *</label>
+      <select 
+        id="barbeariaId" 
+        formControlName="barbeariaId"
+        class="form-input"
+        [class.invalid]="isFieldInvalid('barbeariaId')">
+        <option value="">Selecione uma barbearia</option>
+        <option *ngFor="let barbearia of barbearias" [value]="barbearia.id">
+          {{ barbearia.nome }}
+        </option>
+      </select>
+      <small 
+        *ngIf="isFieldInvalid('barbeariaId')" 
+        class="error-message">
+        {{ getFieldError('barbeariaId') }}
+      </small>
+    </div>
+
+  </form>
+
+  <!-- Loading -->
+  <div *ngIf="loading" class="loading-overlay">
+    <p-progressSpinner></p-progressSpinner>
+    <p>{{ modoEdicao ? 'Atualizando...' : 'Cadastrando...' }}</p>
+  </div>
+
+  <!-- Footer -->
+  <ng-template pTemplate="footer">
+    <div class="dialog-footer">
+      <button 
+        pButton 
+        type="button" 
+        label="Cancelar" 
+        icon="pi pi-times" 
+        class="p-button-text"
+        (click)="hide()"
+        [disabled]="loading">
+      </button>
+      <button 
+        pButton 
+        type="submit" 
+        [label]="modoEdicao ? 'Atualizar' : 'Cadastrar'" 
+        [icon]="modoEdicao ? 'pi pi-check' : 'pi pi-plus'" 
+        class="p-button-success"
+        (click)="onSubmit()"
+        [disabled]="loading || profissionalForm.invalid">
+      </button>
+    </div>
+  </ng-template>
+
+</p-dialog>
+
+<!-- Toast -->
+<p-toast></p-toast> 

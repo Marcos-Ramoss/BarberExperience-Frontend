@@ -1,5 +1,5 @@
 /**
- * Enum de especialidades do profissional
+ * Enum de especialidades profissionais
  */
 export enum Especialidade {
   CORTE_MASCULINO = 'CORTE_MASCULINO',
@@ -18,7 +18,7 @@ export interface ProfissionalResponse {
   cpf: string;
   telefone: string;
   email: string;
-  especialidades: Especialidade[];
+  especialidades: string[];
   barbeariaId: number;
 }
 
@@ -30,7 +30,7 @@ export interface CriarProfissionalRequest {
   cpf: string;
   telefone: string;
   email: string;
-  especialidades: Especialidade[];
+  especialidades: string[];
   barbeariaId: number;
 }
 
@@ -42,16 +42,8 @@ export interface UpdateProfissionalRequest {
   cpf?: string;
   telefone?: string;
   email?: string;
-  especialidades?: Especialidade[];
+  especialidades?: string[];
   barbeariaId?: number;
-}
-
-/**
- * DTO de profissional simplificado (usado em agendamentos)
- */
-export interface ProfissionalDto {
-  id: number;
-  nome: string;
 }
 
 /**
@@ -59,25 +51,16 @@ export interface ProfissionalDto {
  */
 export interface ProfissionalFilter {
   nome?: string;
-  especialidade?: Especialidade;
+  especialidade?: string;
   barbeariaId?: number;
   ativo?: boolean;
 }
 
 /**
- * DTO de perfil profissional
+ * DTO para exibição de especialidades
  */
-export interface ProfissionalProfile {
-  id: number;
-  nome: string;
-  cpf: string;
-  telefone: string;
-  email: string;
-  especialidades: Especialidade[];
-  barbeariaId: number;
-  avaliacaoMedia?: number;
-  totalAvaliacoes?: number;
-  totalAgendamentos?: number;
-  foto?: string;
-  biografia?: string;
+export interface EspecialidadeDisplay {
+  value: string;
+  label: string;
+  icon?: string;
 } 

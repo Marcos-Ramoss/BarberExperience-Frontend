@@ -49,6 +49,15 @@ export const appRoutes: Routes = [
                         loadComponent: () => import('./app/components/servicos/list/servico-list.component').then(m => m.ServicoListComponent)
                     }
                 ]
+            },
+            {
+                path: 'profissionais',
+                children: [
+                    {
+                        path: '',
+                        loadComponent: () => import('./app/components/profissionais/list/profissional-list.component').then(m => m.ProfissionalListComponent)
+                    }
+                ]
             }
         ]
     },
