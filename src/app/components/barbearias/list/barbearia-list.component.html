@@ -3,68 +3,86 @@
   <div class="page-header">
     <div class="header-content">
       <div class="title-section">
-        <h1>Gestão de Barbearias</h1>
-        <p>Gerencie todas as barbearias cadastradas no sistema</p>
+        <h1>Barbearias</h1>
+        <p>Gerencie as barbearias cadastradas no sistema</p>
       </div>
       <div class="header-actions">
-        <p-button 
-          label="Nova Barbearia" 
+        <button 
+          pButton 
+          label="+ Nova Barbearia" 
           icon="pi pi-plus" 
-          styleClass="p-button-success"
-          (onClick)="novaBarbearia()">
-        </p-button>
+          class="p-button-success"
+          (click)="novaBarbearia()">
+        </button>
       </div>
     </div>
   </div>
 
   <!-- Filtros -->
-  <p-card styleClass="filter-card">
-    <div class="filters">
-      <div class="filter-row">
-        <div class="filter-item">
-          <label for="busca">Buscar</label>
+  <div class="filtros-container">
+    <form class="filtros-form">
+      <div class="filtros-row">
+        <!-- Busca por nome -->
+        <div class="filtro-item">
+          <label for="termoBusca">Nome</label>
           <input 
             pInputText 
-            id="busca" 
+            id="termoBusca"
             type="text" 
-            placeholder="Nome, cidade ou email..."
+            placeholder="Buscar por nome..."
             [(ngModel)]="termoBusca"
-            (input)="aplicarFiltros()">
+            name="termoBusca"
+            class="w-full">
         </div>
-        
-        <div class="filter-item">
+
+        <!-- Filtro por estado -->
+        <div class="filtro-item">
           <label for="estado">Estado</label>
           <input 
             pInputText 
-            id="estado" 
+            id="estado"
             type="text" 
             placeholder="Ex: SP, RJ, MG..."
             [(ngModel)]="filtro.estado"
-            (input)="aplicarFiltros()">
+            name="estado"
+            class="w-full">
         </div>
 
-        <div class="filter-item">
+        <!-- Filtro por cidade -->
+        <div class="filtro-item">
           <label for="cidade">Cidade</label>
           <input 
             pInputText 
-            id="cidade" 
+            id="cidade"
             type="text" 
             placeholder="Nome da cidade..."
             [(ngModel)]="filtro.cidade"
-            (input)="aplicarFiltros()">
+            name="cidade"
+            class="w-full">
         </div>
 
-        <div class="filter-actions">
-          <p-button 
+        <!-- Botões -->
+        <div class="filtro-buttons">
+          <button 
+            pButton 
+            type="button" 
+            label="Filtrar" 
+            icon="pi pi-search" 
+            class="p-button-success"
+            (click)="aplicarFiltros()">
+          </button>
+          <button 
+            pButton 
+            type="button" 
             label="Limpar" 
-            icon="pi pi-refresh" 
-            styleClass="p-button-outlined"
-            (onClick)="limparFiltros()">
-          </p-button>
+            icon="pi pi-times" 
+            class="p-button-secondary"
+            (click)="limparFiltros()">
+          </button>
         </div>
       </div>
-    </div>
-  </p-card>
+    </form>
+  </div>
 
   <!-- Loading -->
   <div *ngIf="loading" class="loading-container">
@@ -73,43 +91,33 @@
   </div>
 
   <!-- Error -->
-  <p-message 
-    *ngIf="error" 
-    severity="error" 
-    [text]="error"
-    styleClass="error-message">
-  </p-message>
+  <div *ngIf="error && !loading" class="error-container">
+    <p-message severity="error" [text]="error"></p-message>
+  </div>
 
   <!-- Tabela -->
-  <p-card *ngIf="!loading" styleClass="table-card">
+  <div *ngIf="!loading && !error" class="table-container">
     <p-table 
       [value]="barbeariasFiltradas" 
       [paginator]="true" 
-      [rows]="rows"
-      [totalRecords]="totalRecords"
-      [first]="first"
+      [rows]="10"
       [showCurrentPageReport]="true"
       currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} barbearias"
       [rowsPerPageOptions]="[5, 10, 25, 50]"
       [loading]="loading"
-      (onLazyLoad)="onPageChange($event)"
-      (onSort)="onSort($event)"
       styleClass="p-datatable-sm"
       responsiveLayout="scroll">
       
       <!-- Coluna Nome -->
       <ng-template pTemplate="header">
         <tr>
-          <th pSortableColumn="nome" style="width: 20%">
-            Nome
-            <p-sortIcon field="nome"></p-sortIcon>
-          </th>
-          <th style="width: 15%">CNPJ</th>
-          <th style="width: 20%">Endereço</th>
-          <th style="width: 15%">Contato</th>
-          <th style="width: 10%">Horário</th>
-          <th style="width: 10%">Status</th>
-          <th style="width: 10%">Ações</th>
+          <th>Nome</th>
+          <th>CNPJ</th>
+          <th>Endereço</th>
+          <th>Contato</th>
+          <th>Horário</th>
+          <th>Status</th>
+          <th>Ações</th>
         </tr>
       </ng-template>
 
@@ -119,8 +127,8 @@
           <!-- Nome -->
           <td>
             <div class="barbearia-info">
-              <div class="barbearia-name">{{ barbearia.nome }}</div>
-              <div class="barbearia-email">{{ barbearia.email }}</div>
+              <span class="nome">{{ barbearia.nome }}</span>
+              <span class="email">{{ barbearia.email }}</span>
             </div>
           </td>
 
@@ -129,24 +137,16 @@
 
           <!-- Endereço -->
           <td>
-            <div class="address-info">
-              <div>{{ formatarEndereco(barbearia) }}</div>
+            <div class="endereco">
+              {{ formatarEndereco(barbearia) }}
             </div>
           </td>
 
           <!-- Contato -->
-          <td>
-            <div class="contact-info">
-              <div>{{ barbearia.telefone }}</div>
-            </div>
-          </td>
+          <td>{{ barbearia.telefone }}</td>
 
           <!-- Horário -->
-          <td>
-            <div class="schedule-info">
-              {{ formatarHorario(barbearia) }}
-            </div>
-          </td>
+          <td>{{ formatarHorario(barbearia) }}</td>
 
           <!-- Status -->
           <td>
@@ -159,26 +159,22 @@
           <!-- Ações -->
           <td>
             <div class="actions-cell">
-              <p-button 
-                icon="pi pi-eye" 
-                styleClass="p-button-text p-button-sm p-button-info"
-                pTooltip="Visualizar"
-                (onClick)="visualizarBarbearia(barbearia)">
-              </p-button>
-              
-              <p-button 
+              <button 
+                pButton 
+                type="button" 
                 icon="pi pi-pencil" 
-                styleClass="p-button-text p-button-sm p-button-warning"
+                class="p-button-rounded p-button-text p-button-primary"
                 pTooltip="Editar"
-                (onClick)="editarBarbearia(barbearia)">
-              </p-button>
-              
-              <p-button 
+                (click)="editarBarbearia(barbearia)">
+              </button>
+              <button 
+                pButton 
+                type="button" 
                 icon="pi pi-trash" 
-                styleClass="p-button-text p-button-sm p-button-danger"
+                class="p-button-rounded p-button-text p-button-danger"
                 pTooltip="Excluir"
-                (onClick)="confirmarExclusao(barbearia)">
-              </p-button>
+                (click)="confirmarExclusao(barbearia)">
+              </button>
             </div>
           </td>
         </tr>
@@ -187,32 +183,34 @@
       <!-- Template para quando não há dados -->
       <ng-template pTemplate="emptymessage">
         <tr>
-          <td colspan="7" class="empty-message">
-            <div class="empty-content">
+          <td colspan="7" class="text-center">
+            <div class="empty-state">
               <i class="pi pi-building" style="font-size: 3rem; color: #ccc;"></i>
-              <h3>Nenhuma barbearia encontrada</h3>
-              <p>Não há barbearias cadastradas ou os filtros aplicados não retornaram resultados.</p>
-              <p-button 
-                *ngIf="termoBusca || filtro.estado || filtro.ativa"
-                label="Limpar Filtros" 
-                icon="pi pi-refresh" 
-                styleClass="p-button-outlined"
-                (onClick)="limparFiltros()">
-              </p-button>
+              <p>Nenhuma barbearia encontrada</p>
+              <button 
+                pButton 
+                label="Nova Barbearia" 
+                icon="pi pi-plus" 
+                class="p-button-outlined"
+                (click)="novaBarbearia()">
+              </button>
             </div>
           </td>
         </tr>
       </ng-template>
     </p-table>
-  </p-card>
+  </div>
 
-  <!-- Diálogo de confirmação -->
+  <!-- Modal de Barbearia -->
+  <app-barbearia-modal 
+    #barbeariaModal
+    (barbeariaCriada)="onBarbeariaCriada()"
+    (barbeariaEditada)="onBarbeariaEditada()">
+  </app-barbearia-modal>
+
+  <!-- Toast para mensagens -->
+  <p-toast></p-toast>
+
+  <!-- ConfirmDialog para exclusões -->
   <p-confirmDialog></p-confirmDialog>
-</div>
-
-<!-- Modal de Nova Barbearia -->
-<app-barbearia-modal 
-  #barbeariaModal 
-  (barbeariaCriada)="onBarbeariaCriada()"
-  (barbeariaEditada)="onBarbeariaEditada()">
-</app-barbearia-modal> 
+</div> 

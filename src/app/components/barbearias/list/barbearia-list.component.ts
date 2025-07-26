@@ -8,12 +8,12 @@ import { TableModule } from 'primeng/table';
 import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
 import { InputTextModule } from 'primeng/inputtext';
-
 import { FormsModule } from '@angular/forms';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { MessageModule } from 'primeng/message';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
-import { ConfirmationService } from 'primeng/api';
+import { ToastModule } from 'primeng/toast';
+import { ConfirmationService, MessageService } from 'primeng/api';
 import { TooltipModule } from 'primeng/tooltip';
 import { TagModule } from 'primeng/tag';
 
@@ -37,11 +37,12 @@ import { BarbeariaModalComponent } from '../modal/barbearia-modal.component';
     ProgressSpinnerModule,
     MessageModule,
     ConfirmDialogModule,
+    ToastModule,
     TooltipModule,
     TagModule,
     BarbeariaModalComponent
   ],
-  providers: [ConfirmationService],
+  providers: [ConfirmationService, MessageService],
   templateUrl: './barbearia-list.component.html',
   styleUrls: ['./barbearia-list.component.scss']
 })

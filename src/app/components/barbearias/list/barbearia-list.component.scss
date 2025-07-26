@@ -1,91 +1,105 @@
 .barbearia-list-container {
   padding: 2rem;
-  background-color: transparent;
-  min-height: calc(100vh - var(--topbar-height));
-  width: 100%;
-
-  .fade-in {
-    animation: fadeIn 0.3s ease-in-out;
-  }
-
-  @keyframes fadeIn {
-    from {
-      opacity: 0;
-      transform: translateY(10px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
+  min-height: calc(100vh - 64px);
+  background: var(--surface-ground);
+  animation: fadeIn 0.3s ease-in-out;
 
   .page-header {
-    background: var(--surface-color);
-    border-radius: 12px;
-    padding: 2rem;
     margin-bottom: 2rem;
-    color: var(--text-color);
-    box-shadow: var(--shadow);
-    border: 1px solid var(--border-color);
 
     .header-content {
       display: flex;
       justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 1rem;
+      align-items: flex-start;
+      gap: 2rem;
+
+      @media (max-width: 768px) {
+        flex-direction: column;
+        gap: 1rem;
+      }
 
       .title-section {
         h1 {
           margin: 0 0 0.5rem 0;
           font-size: 2rem;
-          font-weight: 600;
+          font-weight: 700;
+          color: var(--text-color);
         }
 
         p {
           margin: 0;
-          opacity: 0.9;
+          color: var(--text-color-secondary);
           font-size: 1rem;
         }
       }
 
       .header-actions {
-        .p-button {
-          font-weight: 500;
+        button {
+          min-width: 160px;
         }
       }
     }
   }
 
-  .filter-card {
+  .filtros-container {
+    background: var(--surface-card);
+    border-radius: var(--border-radius);
+    padding: 1.5rem;
     margin-bottom: 1.5rem;
-    border: 1px solid var(--border-color);
-    box-shadow: var(--shadow);
+    box-shadow: var(--card-shadow);
+    border: 1px solid var(--surface-border);
 
-    .filters {
-      .filter-row {
+    .filtros-form {
+      .filtros-row {
         display: grid;
-        grid-template-columns: 2fr 1fr 1fr 1fr auto;
+        grid-template-columns: 1fr 1fr 1fr auto;
         gap: 1rem;
         align-items: end;
 
-        .filter-item {
+        @media (max-width: 768px) {
+          grid-template-columns: 1fr;
+          gap: 0.75rem;
+        }
+
+        .filtro-item {
+          display: flex;
+          flex-direction: column;
+          gap: 0.5rem;
+
           label {
-            display: block;
-            margin-bottom: 0.5rem;
-            font-weight: 500;
+            font-weight: 600;
             color: var(--text-color);
             font-size: 0.875rem;
           }
 
-          input, .p-dropdown {
-            width: 100%;
+          input, select {
+            padding: 0.75rem;
+            border: 1px solid var(--surface-border);
+            border-radius: var(--border-radius);
+            background: var(--surface-ground);
+            color: var(--text-color);
+            transition: all 0.2s ease;
+
+            &:focus {
+              outline: none;
+              border-color: var(--primary-color);
+              box-shadow: 0 0 0 2px var(--primary-color-alpha-20);
+            }
           }
         }
 
-        .filter-actions {
+        .filtro-buttons {
           display: flex;
+          gap: 0.5rem;
           align-items: end;
+
+          @media (max-width: 768px) {
+            justify-content: stretch;
+            
+            button {
+              flex: 1;
+            }
+          }
         }
       }
     }
@@ -97,164 +111,122 @@
     align-items: center;
     justify-content: center;
     padding: 3rem;
-    background: var(--surface-color);
-    border-radius: 12px;
-    box-shadow: var(--shadow);
-    border: 1px solid var(--border-color);
+    background: var(--surface-card);
+    border-radius: var(--border-radius);
+    box-shadow: var(--card-shadow);
 
     p {
       margin-top: 1rem;
-      color: var(--text-color-light);
+      color: var(--text-color-secondary);
       font-size: 1rem;
     }
   }
 
-  .error-message {
+  .error-container {
     margin-bottom: 1.5rem;
   }
 
-  .table-card {
-    border: 1px solid var(--border-color);
-    box-shadow: var(--shadow);
+  .table-container {
+    background: var(--surface-card);
+    border-radius: var(--border-radius);
+    box-shadow: var(--card-shadow);
+    border: 1px solid var(--surface-border);
+    overflow: hidden;
 
-    ::ng-deep .p-datatable {
-      .p-datatable-thead > tr > th {
-        background: var(--surface-color-dark);
-        border-bottom: 1px solid var(--border-color);
+    ::ng-deep {
+      .p-datatable {
+        .p-datatable-header {
+          background: var(--surface-section);
+          border-bottom: 1px solid var(--surface-border);
+          padding: 1rem 1.5rem;
+        }
+
+        .p-datatable-thead > tr > th {
+          background: var(--surface-section);
+          border-bottom: 1px solid var(--surface-border);
+          color: var(--text-color);
+          font-weight: 600;
+          padding: 1rem;
+          text-align: left;
+        }
+
+        .p-datatable-tbody > tr {
+          transition: background-color 0.2s ease;
+
+          &:hover {
+            background: var(--surface-hover);
+          }
+
+          > td {
+            padding: 1rem;
+            border-bottom: 1px solid var(--surface-border);
+            color: var(--text-color);
+          }
+        }
+
+        .p-paginator {
+          background: var(--surface-section);
+          border-top: 1px solid var(--surface-border);
+          padding: 1rem 1.5rem;
+        }
+      }
+    }
+
+    .barbearia-info {
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+
+      .nome {
         font-weight: 600;
         color: var(--text-color);
-        padding: 1rem;
       }
 
-      .p-datatable-tbody > tr {
-        transition: background-color 0.2s ease;
-
-        &:hover {
-          background-color: var(--surface-color-dark);
-        }
-
-        > td {
-          padding: 1rem;
-          border-bottom: 1px solid var(--border-color);
-          color: var(--text-color);
-        }
-      }
-
-      .actions-cell {
-        display: flex;
-        gap: 0.5rem;
-        justify-content: center;
-
-        .p-button {
-          width: 2rem;
-          height: 2rem;
-          padding: 0;
-
-          &.p-button-sm {
-            font-size: 0.75rem;
-          }
-        }
-      }
-    }
-  }
-
-  // Responsividade
-  @media (max-width: 768px) {
-    padding: 1rem;
-
-    .page-header {
-      .header-content {
-        flex-direction: column;
-        gap: 1rem;
-        text-align: center;
-
-        .title-section {
-          h1 {
-            font-size: 1.5rem;
-          }
-        }
+      .email {
+        font-size: 0.875rem;
+        color: var(--text-color-secondary);
       }
     }
 
-    .filter-card {
-      .filters {
-        .filter-row {
-          grid-template-columns: 1fr;
-          gap: 1rem;
-
-          .filter-actions {
-            justify-content: center;
-          }
-        }
-      }
+    .endereco {
+      color: var(--text-color);
+      font-size: 0.875rem;
     }
 
-    .table-card {
-      ::ng-deep .p-datatable {
-        .p-datatable-thead > tr > th,
-        .p-datatable-tbody > tr > td {
-          padding: 0.5rem;
-          font-size: 0.875rem;
-        }
+    .actions-cell {
+      display: flex;
+      gap: 0.5rem;
+      justify-content: flex-start;
+    }
 
-        .actions-cell {
-          flex-direction: column;
-          gap: 0.25rem;
+    .empty-state {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 3rem;
+      text-align: center;
 
-          .p-button {
-            width: 1.75rem;
-            height: 1.75rem;
-          }
-        }
+      p {
+        margin: 1rem 0;
+        color: var(--text-color-secondary);
+        font-size: 1rem;
+      }
+
+      button {
+        margin-top: 1rem;
       }
     }
   }
+}
 
-  // Estilos globais para PrimeNG
-  ::ng-deep {
-    .p-button-outlined {
-      border-color: var(--primary-color);
-      color: var(--primary-color);
-
-      &:hover {
-        background-color: var(--primary-color);
-        border-color: var(--primary-color);
-        color: white;
-      }
-    }
-
-    .p-button-success {
-      background-color: var(--primary-color);
-      border-color: var(--primary-color);
-
-      &:hover {
-        background-color: var(--primary-color-dark);
-        border-color: var(--primary-color-dark);
-      }
-    }
-
-    .p-tag-success {
-      background-color: #dcfce7;
-      color: #166534;
-      border: 1px solid #bbf7d0;
-    }
-
-    .p-tag-info {
-      background-color: #dbeafe;
-      color: #1e40af;
-      border: 1px solid #bfdbfe;
-    }
-
-    .p-tag-warning {
-      background-color: #fef3c7;
-      color: #92400e;
-      border: 1px solid #fde68a;
-    }
-
-    .p-tag-danger {
-      background-color: #fee2e2;
-      color: #991b1b;
-      border: 1px solid #fecaca;
-    }
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 } 
