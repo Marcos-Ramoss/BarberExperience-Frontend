@@ -1,0 +1,389 @@
+.dashboard-container {
+  padding: 1.5rem;
+  background-color: #f8f9fa;
+  min-height: 100vh;
+}
+
+// Header do Dashboard
+.dashboard-header {
+  background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+  border-radius: 12px;
+  padding: 2rem;
+  margin-bottom: 2rem;
+  color: white;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+
+  .header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+
+    .welcome-section {
+      h1 {
+        margin: 0 0 0.5rem 0;
+        font-size: 2rem;
+        font-weight: 700;
+      }
+
+      p {
+        margin: 0;
+        font-size: 1.1rem;
+        opacity: 0.9;
+      }
+    }
+
+    .header-actions {
+      display: flex;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+    }
+  }
+}
+
+// Mensagem de Erro
+.error-message {
+  margin-bottom: 1.5rem;
+}
+
+// Loading
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem;
+  text-align: center;
+
+  p {
+    margin-top: 1rem;
+    color: #6c757d;
+    font-size: 1.1rem;
+  }
+}
+
+// Conteúdo do Dashboard
+.dashboard-content {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+// Grid de Estatísticas
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+
+  .stat-card {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(34, 197, 94, 0.15);
+    }
+
+    ::ng-deep .p-card {
+      border: 1px solid rgba(34, 197, 94, 0.1);
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .stat-header {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 1rem;
+      background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+      border-radius: 8px 8px 0 0;
+
+      i {
+        font-size: 1.5rem;
+        color: #495057;
+      }
+
+      span {
+        font-weight: 600;
+        color: #495057;
+        font-size: 1.1rem;
+      }
+    }
+
+    .stat-value {
+      font-size: 2.5rem;
+      font-weight: 700;
+      color: #212529;
+      text-align: center;
+      margin: 1rem 0;
+    }
+
+    .stat-description {
+      text-align: center;
+      color: #6c757d;
+      font-size: 0.9rem;
+      margin-bottom: 1rem;
+    }
+  }
+}
+
+// Grid de Informações
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+
+  .info-card {
+    transition: transform 0.2s ease;
+
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(34, 197, 94, 0.15);
+    }
+
+    ::ng-deep .p-card {
+      border: 1px solid rgba(34, 197, 94, 0.1);
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .info-value {
+      font-size: 1.8rem;
+      font-weight: 600;
+      color: #212529;
+      text-align: center;
+      margin: 1rem 0;
+    }
+
+    .info-description {
+      text-align: center;
+      color: #6c757d;
+      font-size: 0.9rem;
+    }
+  }
+}
+
+// Grid de Gráfico e Atividades
+.charts-activities-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+
+  @media (max-width: 1024px) {
+    grid-template-columns: 1fr;
+  }
+
+  .chart-card {
+    ::ng-deep .p-card {
+      border: 1px solid rgba(34, 197, 94, 0.1);
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .dashboard-chart {
+      height: 300px;
+    }
+  }
+
+  .activities-card {
+    ::ng-deep .p-card {
+      border: 1px solid rgba(34, 197, 94, 0.1);
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .no-activities {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+      text-align: center;
+      color: #6c757d;
+
+      i {
+        font-size: 2rem;
+        margin-bottom: 1rem;
+      }
+
+      p {
+        margin: 0;
+        font-size: 1rem;
+      }
+    }
+
+    .activities-list {
+      max-height: 400px;
+      overflow-y: auto;
+
+      .activity-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 1rem;
+        padding: 1rem;
+        border-bottom: 1px solid #e9ecef;
+        transition: background-color 0.2s ease;
+
+        &:last-child {
+          border-bottom: none;
+        }
+
+        &:hover {
+          background-color: #f0fdf4;
+        }
+
+                 .activity-icon {
+           flex-shrink: 0;
+           width: 40px;
+           height: 40px;
+           border-radius: 50%;
+           background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+           display: flex;
+           align-items: center;
+           justify-content: center;
+           color: white;
+
+          i {
+            font-size: 1rem;
+          }
+        }
+
+        .activity-content {
+          flex: 1;
+          min-width: 0;
+
+          .activity-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+
+            .activity-description {
+              font-weight: 500;
+              color: #212529;
+              flex: 1;
+              min-width: 0;
+            }
+          }
+
+          .activity-details {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            font-size: 0.85rem;
+            color: #6c757d;
+
+            .activity-user {
+              font-weight: 500;
+            }
+
+            .activity-date {
+              color: #868e96;
+            }
+
+                         .activity-value {
+               font-weight: 600;
+               color: #22c55e;
+             }
+          }
+        }
+      }
+    }
+  }
+}
+
+// Estilos para botões e elementos interativos
+::ng-deep {
+  .p-button.p-button-outlined {
+    border-color: #22c55e;
+    color: #22c55e;
+    
+    &:hover {
+      background-color: #22c55e;
+      border-color: #22c55e;
+      color: white;
+    }
+  }
+
+  .p-button.p-button-text {
+    color: #22c55e;
+    
+    &:hover {
+      background-color: rgba(34, 197, 94, 0.1);
+    }
+  }
+
+  .p-tag.p-tag-success {
+    background-color: #22c55e;
+    color: white;
+  }
+
+  .p-tag.p-tag-info {
+    background-color: #3b82f6;
+    color: white;
+  }
+
+  .p-tag.p-tag-warning {
+    background-color: #f59e0b;
+    color: white;
+  }
+
+  .p-tag.p-tag-danger {
+    background-color: #ef4444;
+    color: white;
+  }
+}
+
+// Responsividade
+@media (max-width: 768px) {
+  .dashboard-container {
+    padding: 1rem;
+  }
+
+  .dashboard-header {
+    padding: 1.5rem;
+
+    .header-content {
+      flex-direction: column;
+      text-align: center;
+
+      .header-actions {
+        justify-content: center;
+      }
+    }
+  }
+
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .info-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .charts-activities-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+// Dark mode support
+@media (prefers-color-scheme: dark) {
+  .dashboard-container {
+    background-color: #1a1a1a;
+  }
+
+  .stat-card,
+  .info-card,
+  .chart-card,
+  .activities-card {
+    ::ng-deep .p-card {
+      background-color: #2d2d2d;
+      color: #ffffff;
+    }
+  }
+
+  .activity-item:hover {
+    background-color: #3a3a3a !important;
+  }
+} 

@@ -1,0 +1,213 @@
+<div class="dashboard-container">
+  <!-- Header do Dashboard -->
+  <div class="dashboard-header">
+    <div class="header-content">
+      <div class="welcome-section">
+        <h1>Dashboard</h1>
+        <p>Bem-vindo, {{ currentUser?.username || 'Usuário' }}!</p>
+      </div>
+      <div class="header-actions">
+        <p-button 
+          icon="pi pi-refresh" 
+          label="Atualizar" 
+          (onClick)="refreshDashboard()"
+          [loading]="loading"
+          styleClass="p-button-outlined">
+        </p-button>
+        <p-button 
+          icon="pi pi-sign-out" 
+          label="Sair" 
+          (onClick)="logout()"
+          styleClass="p-button-outlined">
+        </p-button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mensagem de Erro -->
+  <div *ngIf="errorMessage" class="error-message">
+    <p-message severity="error" [text]="errorMessage"></p-message>
+  </div>
+
+  <!-- Loading -->
+  <div *ngIf="loading" class="loading-container">
+    <p-progressSpinner></p-progressSpinner>
+    <p>Carregando dashboard...</p>
+  </div>
+
+  <!-- Conteúdo do Dashboard -->
+  <div *ngIf="!loading" class="dashboard-content">
+    
+    <!-- Cards de Estatísticas -->
+    <div class="stats-grid">
+      <p-card styleClass="stat-card">
+        <ng-template pTemplate="header">
+          <div class="stat-header">
+            <i class="pi pi-building"></i>
+            <span>Barbearias</span>
+          </div>
+        </ng-template>
+        <ng-template pTemplate="content">
+          <div class="stat-value">{{ stats?.totalBarbearias || 0 }}</div>
+          <div class="stat-description">Total de barbearias cadastradas</div>
+        </ng-template>
+        <ng-template pTemplate="footer">
+          <p-button 
+            label="Ver Barbearias" 
+            icon="pi pi-arrow-right"
+            (onClick)="navigateToModule('barbearias')"
+            styleClass="p-button-text">
+          </p-button>
+        </ng-template>
+      </p-card>
+
+      <p-card styleClass="stat-card">
+        <ng-template pTemplate="header">
+          <div class="stat-header">
+            <i class="pi pi-users"></i>
+            <span>Profissionais</span>
+          </div>
+        </ng-template>
+        <ng-template pTemplate="content">
+          <div class="stat-value">{{ stats?.totalProfissionais || 0 }}</div>
+          <div class="stat-description">Total de profissionais</div>
+        </ng-template>
+        <ng-template pTemplate="footer">
+          <p-button 
+            label="Ver Profissionais" 
+            icon="pi pi-arrow-right"
+            (onClick)="navigateToModule('profissionais')"
+            styleClass="p-button-text">
+          </p-button>
+        </ng-template>
+      </p-card>
+
+      <p-card styleClass="stat-card">
+        <ng-template pTemplate="header">
+          <div class="stat-header">
+            <i class="pi pi-user"></i>
+            <span>Clientes</span>
+          </div>
+        </ng-template>
+        <ng-template pTemplate="content">
+          <div class="stat-value">{{ stats?.totalClientes || 0 }}</div>
+          <div class="stat-description">Total de clientes</div>
+        </ng-template>
+        <ng-template pTemplate="footer">
+          <p-button 
+            label="Ver Clientes" 
+            icon="pi pi-arrow-right"
+            (onClick)="navigateToModule('clientes')"
+            styleClass="p-button-text">
+          </p-button>
+        </ng-template>
+      </p-card>
+
+      <p-card styleClass="stat-card">
+        <ng-template pTemplate="header">
+          <div class="stat-header">
+            <i class="pi pi-calendar"></i>
+            <span>Agendamentos</span>
+          </div>
+        </ng-template>
+        <ng-template pTemplate="content">
+          <div class="stat-value">{{ stats?.totalAgendamentos || 0 }}</div>
+          <div class="stat-description">Total de agendamentos</div>
+        </ng-template>
+        <ng-template pTemplate="footer">
+          <p-button 
+            label="Ver Agendamentos" 
+            icon="pi pi-arrow-right"
+            (onClick)="navigateToModule('agendamentos')"
+            styleClass="p-button-text">
+          </p-button>
+        </ng-template>
+      </p-card>
+    </div>
+
+    <!-- Cards de Informações Adicionais -->
+    <div class="info-grid">
+      <p-card header="Agendamentos Hoje" styleClass="info-card">
+        <ng-template pTemplate="content">
+          <div class="info-value">{{ stats?.agendamentosHoje || 0 }}</div>
+          <div class="info-description">Agendamentos para hoje</div>
+        </ng-template>
+      </p-card>
+
+      <p-card header="Agendamentos da Semana" styleClass="info-card">
+        <ng-template pTemplate="content">
+          <div class="info-value">{{ stats?.agendamentosSemana || 0 }}</div>
+          <div class="info-description">Agendamentos desta semana</div>
+        </ng-template>
+      </p-card>
+
+      <p-card header="Faturamento do Mês" styleClass="info-card">
+        <ng-template pTemplate="content">
+          <div class="info-value">{{ formatCurrency(stats?.faturamentoMes || 0) }}</div>
+          <div class="info-description">Faturamento do mês atual</div>
+        </ng-template>
+      </p-card>
+
+      <p-card header="Faturamento do Ano" styleClass="info-card">
+        <ng-template pTemplate="content">
+          <div class="info-value">{{ formatCurrency(stats?.faturamentoAno || 0) }}</div>
+          <div class="info-description">Faturamento do ano atual</div>
+        </ng-template>
+      </p-card>
+    </div>
+
+    <!-- Gráfico e Atividades -->
+    <div class="charts-activities-grid">
+      <!-- Gráfico -->
+      <p-card header="Visão Geral" styleClass="chart-card">
+        <ng-template pTemplate="content">
+          <p-chart 
+            type="doughnut" 
+            [data]="chartData" 
+            [options]="chartOptions"
+            styleClass="dashboard-chart">
+          </p-chart>
+        </ng-template>
+      </p-card>
+
+      <!-- Atividades Recentes -->
+      <p-card header="Atividades Recentes" styleClass="activities-card">
+        <ng-template pTemplate="content">
+          <div *ngIf="atividades.length === 0" class="no-activities">
+            <i class="pi pi-info-circle"></i>
+            <p>Nenhuma atividade recente</p>
+          </div>
+          
+          <div *ngIf="atividades.length > 0" class="activities-list">
+            <div *ngFor="let atividade of atividades" class="activity-item">
+              <div class="activity-icon">
+                <i class="pi" [ngClass]="{
+                  'pi-calendar-plus': atividade.tipo === 'AGENDAMENTO',
+                  'pi-user-plus': atividade.tipo === 'CADASTRO',
+                  'pi-calendar-times': atividade.tipo === 'CANCELAMENTO',
+                  'pi-credit-card': atividade.tipo === 'PAGAMENTO'
+                }"></i>
+              </div>
+              <div class="activity-content">
+                <div class="activity-header">
+                  <span class="activity-description">{{ atividade.descricao }}</span>
+                  <p-tag 
+                    [value]="atividade.tipo" 
+                    [severity]="getTagSeverity(atividade.tipo)">
+                  </p-tag>
+                </div>
+                <div class="activity-details">
+                  <span class="activity-user">{{ atividade.usuario }}</span>
+                  <span class="activity-date">{{ formatDate(atividade.data) }}</span>
+                  <span *ngIf="atividade.valor" class="activity-value">
+                    {{ formatCurrency(atividade.valor) }}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </ng-template>
+      </p-card>
+    </div>
+  </div>
+</div> 
