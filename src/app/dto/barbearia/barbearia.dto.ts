@@ -68,6 +68,24 @@ export interface UpdateBarbeariaRequest {
 }
 
 /**
+ * DTO de atualização de barbearia (conforme swagger.json)
+ */
+export interface AtualizarBarbeariaRequest {
+  nome: string;
+  cnpj: string;
+  telefone: string;
+  email: string;
+  rua: string;
+  numero: string;
+  bairro: string;
+  cidade: string;
+  estado: string;
+  cep: string;
+  abertura: string;
+  fechamento: string;
+}
+
+/**
  * DTO de filtro de barbearia
  */
 export interface BarbeariaFilter {

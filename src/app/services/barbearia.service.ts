@@ -6,6 +6,7 @@ import {
   BarbeariaResponse, 
   CriarBarbeariaRequest, 
   UpdateBarbeariaRequest,
+  AtualizarBarbeariaRequest,
   BarbeariaFilter
 } from '../dto/barbearia/barbearia.dto';
 
@@ -95,6 +96,37 @@ export class BarbeariaService {
     this.clearError();
 
     return this.barbeariaRepository.atualizarBarbearia(id, request).pipe(
+      tap(barbeariaAtualizada => {
+        // Atualiza a barbearia na lista
+        const barbeariasAtuais = this.barbeariasSubject.value;
+        const index = barbeariasAtuais.findIndex(b => b.id === id);
+        if (index !== -1) {
+          barbeariasAtuais[index] = barbeariaAtualizada;
+          this.barbeariasSubject.next([...barbeariasAtuais]);
+        }
+
+        // Atualiza a barbearia selecionada se for a mesma
+        const barbeariaSelecionada = this.barbeariaSelecionadaSubject.value;
+        if (barbeariaSelecionada && barbeariaSelecionada.id === id) {
+          this.barbeariaSelecionadaSubject.next(barbeariaAtualizada);
+        }
+      }),
+      catchError(error => {
+        this.setError('Erro ao atualizar barbearia: ' + error.message);
+        throw error;
+      }),
+      finalize(() => this.setLoading(false))
+    );
+  }
+
+  /**
+   * Atualiza uma barbearia existente usando PUT real
+   */
+  atualizarBarbeariaComPut(id: number, request: AtualizarBarbeariaRequest): Observable<BarbeariaResponse> {
+    this.setLoading(true);
+    this.clearError();
+
+    return this.barbeariaRepository.atualizarBarbeariaComPut(id, request).pipe(
       tap(barbeariaAtualizada => {
         // Atualiza a barbearia na lista
         const barbeariasAtuais = this.barbeariasSubject.value;

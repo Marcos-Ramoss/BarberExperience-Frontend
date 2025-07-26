@@ -19,7 +19,7 @@ import { MessageService } from 'primeng/api';
 import { BarbeariaService } from '../../../services/barbearia.service';
 
 // DTOs
-import { CriarBarbeariaRequest, UpdateBarbeariaRequest, BarbeariaResponse } from '../../../dto/barbearia/barbearia.dto';
+import { CriarBarbeariaRequest, UpdateBarbeariaRequest, AtualizarBarbeariaRequest, BarbeariaResponse } from '../../../dto/barbearia/barbearia.dto';
 
 @Component({
   selector: 'app-barbearia-modal',
@@ -154,7 +154,7 @@ export class BarbeariaModalComponent implements OnInit, OnDestroy {
       
       if (this.modoEdicao && this.barbeariaId) {
         // Modo edição
-        const barbeariaData: UpdateBarbeariaRequest = {
+        const barbeariaData: AtualizarBarbeariaRequest = {
           nome: formData.nome,
           cnpj: formData.cnpj,
           telefone: formData.telefone,
@@ -165,11 +165,11 @@ export class BarbeariaModalComponent implements OnInit, OnDestroy {
           cidade: formData.cidade,
           estado: formData.estado,
           cep: formData.cep,
-          horaAbertura: formData.horaAbertura,
-          horaFechamento: formData.horaFechamento
+          abertura: formData.horaAbertura,
+          fechamento: formData.horaFechamento
         };
 
-        this.barbeariaService.atualizarBarbearia(this.barbeariaId, barbeariaData)
+        this.barbeariaService.atualizarBarbeariaComPut(this.barbeariaId, barbeariaData)
           .pipe(takeUntil(this.destroy$))
           .subscribe({
             next: (response) => {

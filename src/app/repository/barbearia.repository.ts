@@ -8,6 +8,7 @@ import {
   BarbeariaResponse, 
   CriarBarbeariaRequest, 
   UpdateBarbeariaRequest,
+  AtualizarBarbeariaRequest,
   BarbeariaFilter
 } from '../dto/barbearia/barbearia.dto';
 
@@ -46,12 +47,22 @@ export class BarbeariaRepository extends BaseRepository<BarbeariaResponse, Criar
 
   /**
    * Atualiza uma barbearia existente
-   * NOTA: Endpoint PUT ainda não implementado no backend
    */
   atualizarBarbearia(id: number, request: UpdateBarbeariaRequest): Observable<BarbeariaResponse> {
-    // TODO: Implementar quando o endpoint PUT estiver disponível
-    // return this.update(id, request);
-    return this.atualizarBarbeariaMock(id, request);
+    return this.update(id, request);
+  }
+
+  /**
+   * Atualiza uma barbearia existente usando PUT real
+   */
+  atualizarBarbeariaComPut(id: number, request: AtualizarBarbeariaRequest): Observable<BarbeariaResponse> {
+    console.log('🔧 EDITANDO BARBEARIA COM PUT:', { id, request });
+    
+    return this.http.put<BarbeariaResponse>(`${this.baseUrl}/${this.endpoint}/${id}`, request, {
+      headers: this.getAuthHeaders()
+    }).pipe(
+      catchError(this.handleError)
+    );
   }
 
   /**
