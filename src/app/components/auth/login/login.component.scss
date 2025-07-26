@@ -1,0 +1,23 @@
+// Estilos específicos do componente de login
+// A maioria dos estilos já está sendo aplicada via Tailwind CSS no template
+
+// Ajustes específicos se necessário
+.text-muted-color {
+  color: var(--text-color-secondary);
+}
+
+// Ajuste para o botão de submit
+p-button {
+  display: block;
+  width: 100%;
+}
+
+// Ajuste para o checkbox
+p-checkbox {
+  margin-right: 0.5rem;
+}
+
+// Ajuste para o password field
+p-password {
+  width: 100%;
+} 
