@@ -30,6 +30,14 @@ export const appRoutes: Routes = [
             {
                 path: '',
                 loadComponent: () => import('./app/components/barbearias/list/barbearia-list.component').then(m => m.BarbeariaListComponent)
+            },
+            {
+                path: 'nova',
+                loadComponent: () => import('./app/components/barbearias/form/barbearia-form.component').then(m => m.BarbeariaFormComponent)
+            },
+            {
+                path: 'editar/:id',
+                loadComponent: () => import('./app/components/barbearias/form/barbearia-form.component').then(m => m.BarbeariaFormComponent)
             }
         ]
     },

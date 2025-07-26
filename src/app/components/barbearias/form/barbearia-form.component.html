@@ -1,0 +1,262 @@
+<div class="barbearia-form-container">
+  <!-- Header -->
+  <div class="header">
+    <div class="title-section">
+      <h1>{{ isEditMode ? 'Editar' : 'Nova' }} Barbearia</h1>
+      <p>{{ isEditMode ? 'Edite os dados da barbearia' : 'Preencha os dados para criar uma nova barbearia' }}</p>
+    </div>
+    <div class="actions">
+      <p-button 
+        label="Voltar" 
+        icon="pi pi-arrow-left" 
+        styleClass="p-button-secondary"
+        (onClick)="onCancel()">
+      </p-button>
+    </div>
+  </div>
+
+  <!-- Loading -->
+  <div *ngIf="loading" class="loading-container">
+    <p-progressSpinner></p-progressSpinner>
+    <p>Carregando...</p>
+  </div>
+
+  <!-- Error Message -->
+  <div *ngIf="error" class="error-message">
+    <p-message severity="error" [text]="error"></p-message>
+  </div>
+
+  <!-- Form -->
+  <div *ngIf="!loading" class="form-container">
+    <p-card styleClass="form-card">
+      <form [formGroup]="barbeariaForm" (ngSubmit)="onSubmit()">
+        
+        <!-- Informações Básicas -->
+        <div class="form-section">
+          <h3>Informações Básicas</h3>
+          
+          <div class="form-row">
+            <div class="form-field">
+              <label for="nome">Nome da Barbearia *</label>
+              <input 
+                id="nome"
+                type="text" 
+                pInputText 
+                formControlName="nome"
+                placeholder="Ex: Barbearia do João"
+                [class.invalid]="isFieldInvalid('nome')">
+              <small *ngIf="isFieldInvalid('nome')" class="error-text">
+                {{ getFieldError('nome') }}
+              </small>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-field">
+              <label for="cnpj">CNPJ *</label>
+              <p-inputMask 
+                id="cnpj"
+                formControlName="cnpj"
+                mask="99.999.999/9999-99"
+                placeholder="00.000.000/0000-00"
+                [class.invalid]="isFieldInvalid('cnpj')">
+              </p-inputMask>
+              <small *ngIf="isFieldInvalid('cnpj')" class="error-text">
+                {{ getFieldError('cnpj') }}
+              </small>
+            </div>
+            
+            <div class="form-field">
+              <label for="telefone">Telefone *</label>
+              <p-inputMask 
+                id="telefone"
+                formControlName="telefone"
+                mask="(99) 99999-9999"
+                placeholder="(11) 99999-9999"
+                [class.invalid]="isFieldInvalid('telefone')">
+              </p-inputMask>
+              <small *ngIf="isFieldInvalid('telefone')" class="error-text">
+                {{ getFieldError('telefone') }}
+              </small>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-field">
+              <label for="email">Email *</label>
+              <input 
+                id="email"
+                type="email" 
+                pInputText 
+                formControlName="email"
+                placeholder="contato@barbearia.com"
+                [class.invalid]="isFieldInvalid('email')">
+              <small *ngIf="isFieldInvalid('email')" class="error-text">
+                {{ getFieldError('email') }}
+              </small>
+            </div>
+          </div>
+        </div>
+
+        <!-- Endereço -->
+        <div class="form-section">
+          <h3>Endereço</h3>
+          
+          <div class="form-row">
+            <div class="form-field">
+              <label for="cep">CEP *</label>
+              <p-inputMask 
+                id="cep"
+                formControlName="cep"
+                mask="99999-999"
+                placeholder="00000-000"
+                [class.invalid]="isFieldInvalid('cep')">
+              </p-inputMask>
+              <small *ngIf="isFieldInvalid('cep')" class="error-text">
+                {{ getFieldError('cep') }}
+              </small>
+            </div>
+            
+            <div class="form-field">
+              <label for="estado">Estado *</label>
+              <select 
+                id="estado"
+                pInputText 
+                formControlName="estado"
+                [class.invalid]="isFieldInvalid('estado')">
+                <option value="">Selecione um estado</option>
+                <option *ngFor="let estado of estados" [value]="estado.value">
+                  {{ estado.label }}
+                </option>
+              </select>
+              <small *ngIf="isFieldInvalid('estado')" class="error-text">
+                {{ getFieldError('estado') }}
+              </small>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-field">
+              <label for="cidade">Cidade *</label>
+              <input 
+                id="cidade"
+                type="text" 
+                pInputText 
+                formControlName="cidade"
+                placeholder="Nome da cidade"
+                [class.invalid]="isFieldInvalid('cidade')">
+              <small *ngIf="isFieldInvalid('cidade')" class="error-text">
+                {{ getFieldError('cidade') }}
+              </small>
+            </div>
+            
+            <div class="form-field">
+              <label for="bairro">Bairro *</label>
+              <input 
+                id="bairro"
+                type="text" 
+                pInputText 
+                formControlName="bairro"
+                placeholder="Nome do bairro"
+                [class.invalid]="isFieldInvalid('bairro')">
+              <small *ngIf="isFieldInvalid('bairro')" class="error-text">
+                {{ getFieldError('bairro') }}
+              </small>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-field">
+              <label for="rua">Rua *</label>
+              <input 
+                id="rua"
+                type="text" 
+                pInputText 
+                formControlName="rua"
+                placeholder="Nome da rua"
+                [class.invalid]="isFieldInvalid('rua')">
+              <small *ngIf="isFieldInvalid('rua')" class="error-text">
+                {{ getFieldError('rua') }}
+              </small>
+            </div>
+            
+            <div class="form-field">
+              <label for="numero">Número *</label>
+              <input 
+                id="numero"
+                type="text" 
+                pInputText 
+                formControlName="numero"
+                placeholder="123"
+                [class.invalid]="isFieldInvalid('numero')">
+              <small *ngIf="isFieldInvalid('numero')" class="error-text">
+                {{ getFieldError('numero') }}
+              </small>
+            </div>
+          </div>
+        </div>
+
+        <!-- Horário de Funcionamento -->
+        <div class="form-section">
+          <h3>Horário de Funcionamento</h3>
+          
+          <div class="form-row">
+            <div class="form-field">
+              <label for="horaAbertura">Hora de Abertura *</label>
+              <select 
+                id="horaAbertura"
+                pInputText 
+                formControlName="horaAbertura"
+                [class.invalid]="isFieldInvalid('horaAbertura')">
+                <option *ngFor="let horario of horarios" [value]="horario.value">
+                  {{ horario.label }}
+                </option>
+              </select>
+              <small *ngIf="isFieldInvalid('horaAbertura')" class="error-text">
+                {{ getFieldError('horaAbertura') }}
+              </small>
+            </div>
+            
+            <div class="form-field">
+              <label for="horaFechamento">Hora de Fechamento *</label>
+              <select 
+                id="horaFechamento"
+                pInputText 
+                formControlName="horaFechamento"
+                [class.invalid]="isFieldInvalid('horaFechamento')">
+                <option *ngFor="let horario of horarios" [value]="horario.value">
+                  {{ horario.label }}
+                </option>
+              </select>
+              <small *ngIf="isFieldInvalid('horaFechamento')" class="error-text">
+                {{ getFieldError('horaFechamento') }}
+              </small>
+            </div>
+          </div>
+        </div>
+
+        <!-- Botões -->
+        <div class="form-actions">
+          <p-button 
+            type="button"
+            label="Cancelar" 
+            icon="pi pi-times" 
+            styleClass="p-button-secondary"
+            (onClick)="onCancel()">
+          </p-button>
+          
+          <p-button 
+            type="submit"
+            label="{{ isEditMode ? 'Atualizar' : 'Criar' }} Barbearia" 
+            icon="pi pi-check" 
+            styleClass="p-button-success"
+            [loading]="loading">
+          </p-button>
+        </div>
+      </form>
+    </p-card>
+  </div>
+</div>
+
+<!-- Confirm Dialog -->
+<p-confirmDialog></p-confirmDialog> 

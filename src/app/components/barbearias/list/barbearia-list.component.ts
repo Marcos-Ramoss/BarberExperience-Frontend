@@ -189,7 +189,7 @@ export class BarbeariaListComponent implements OnInit, OnDestroy {
    * Navega para editar barbearia
    */
   editarBarbearia(barbearia: BarbeariaResponse): void {
-    this.router.navigate(['/barbearias', barbearia.id, 'editar']);
+    this.router.navigate(['/barbearias/editar', barbearia.id]);
   }
 
   /**
