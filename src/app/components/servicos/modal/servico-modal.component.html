@@ -1,0 +1,148 @@
+<!-- Toast para mensagens -->
+<p-toast position="top-right"></p-toast>
+
+<!-- Modal de Cadastro -->
+<p-dialog 
+  [(visible)]="visible" 
+  [modal]="true" 
+  [closable]="true"
+  [draggable]="false"
+  [resizable]="false"
+  [header]="modoEdicao ? 'Editar Serviço' : 'Novo Serviço'"
+  [style]="{width: '90vw', maxWidth: '600px'}"
+  [breakpoints]="{'960px': '75vw', '641px': '90vw'}"
+  (onHide)="hide()">
+  
+  <form [formGroup]="servicoForm" (ngSubmit)="onSubmit()" class="modal-form">
+    
+    <!-- Informações Básicas -->
+    <div class="form-section">
+      <h3 class="section-title">
+        <i class="pi pi-info-circle"></i>
+        Informações do Serviço
+      </h3>
+      
+      <div class="form-row">
+        <div class="form-field">
+          <label for="nome">Nome do Serviço *</label>
+          <input 
+            id="nome"
+            type="text" 
+            pInputText 
+            formControlName="nome"
+            placeholder="Ex: Corte Masculino, Barba, etc."
+            [class.invalid]="isFieldInvalid('nome')">
+          <small class="error-message" *ngIf="isFieldInvalid('nome')">
+            {{ getFieldError('nome') }}
+          </small>
+        </div>
+        
+        <div class="form-field">
+          <label for="barbeariaId">Barbearia *</label>
+          <select 
+            id="barbeariaId"
+            formControlName="barbeariaId"
+            [class.invalid]="isFieldInvalid('barbeariaId')">
+            <option *ngFor="let opcao of opcoesBarbearia" [value]="opcao.value">
+              {{ opcao.label }}
+            </option>
+          </select>
+          <small class="error-message" *ngIf="isFieldInvalid('barbeariaId')">
+            {{ getFieldError('barbeariaId') }}
+          </small>
+        </div>
+      </div>
+      
+      <div class="form-field">
+        <label for="descricao">Descrição *</label>
+        <textarea 
+          id="descricao"
+          formControlName="descricao"
+          placeholder="Descreva detalhadamente o serviço oferecido..."
+          rows="3"
+          [class.invalid]="isFieldInvalid('descricao')">
+        </textarea>
+        <small class="error-message" *ngIf="isFieldInvalid('descricao')">
+          {{ getFieldError('descricao') }}
+        </small>
+      </div>
+    </div>
+
+    <!-- Preço e Duração -->
+    <div class="form-section">
+      <h3 class="section-title">
+        <i class="pi pi-dollar"></i>
+        Preço e Duração
+      </h3>
+      
+      <div class="form-row">
+        <div class="form-field">
+          <label for="preco">Preço (R$) *</label>
+          <p-inputNumber 
+            id="preco"
+            formControlName="preco"
+            mode="currency" 
+            currency="BRL" 
+            locale="pt-BR"
+            placeholder="0,00"
+            [minFractionDigits]="2"
+            [maxFractionDigits]="2"
+            [class.invalid]="isFieldInvalid('preco')">
+          </p-inputNumber>
+          <small class="error-message" *ngIf="isFieldInvalid('preco')">
+            {{ getFieldError('preco') }}
+          </small>
+        </div>
+        
+        <div class="form-field">
+          <label for="duracaoMinutos">Duração *</label>
+          <select 
+            id="duracaoMinutos"
+            formControlName="duracaoMinutos"
+            [class.invalid]="isFieldInvalid('duracaoMinutos')">
+            <option *ngFor="let opcao of opcoesDuracao" [value]="opcao.value">
+              {{ opcao.label }}
+            </option>
+          </select>
+          <small class="error-message" *ngIf="isFieldInvalid('duracaoMinutos')">
+            {{ getFieldError('duracaoMinutos') }}
+          </small>
+        </div>
+      </div>
+    </div>
+  </form>
+
+  <!-- Loading -->
+  <div class="loading-overlay" *ngIf="loading">
+    <p-progressSpinner 
+      strokeWidth="4" 
+      fill="var(--surface-color)" 
+      animationDuration=".5s">
+    </p-progressSpinner>
+    <p>{{ modoEdicao ? 'Atualizando serviço...' : 'Cadastrando serviço...' }}</p>
+  </div>
+
+  <!-- Footer do Modal -->
+  <ng-template pTemplate="footer">
+    <div class="modal-footer">
+      <button 
+        pButton 
+        type="button" 
+        label="Cancelar" 
+        class="p-button-text"
+        (click)="hide()"
+        [disabled]="loading">
+      </button>
+      
+      <button 
+        pButton 
+        type="submit" 
+        [label]="modoEdicao ? 'Atualizar Serviço' : 'Cadastrar Serviço'" 
+        icon="pi pi-check"
+        class="p-button-success"
+        (click)="onSubmit()"
+        [disabled]="loading || servicoForm.invalid">
+      </button>
+    </div>
+  </ng-template>
+</p-dialog> 

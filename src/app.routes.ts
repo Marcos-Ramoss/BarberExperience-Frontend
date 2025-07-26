@@ -40,6 +40,15 @@ export const appRoutes: Routes = [
                         loadComponent: () => import('./app/components/barbearias/list/barbearia-list.component').then(m => m.BarbeariaListComponent)
                     }
                 ]
+            },
+            {
+                path: 'servicos',
+                children: [
+                    {
+                        path: '',
+                        loadComponent: () => import('./app/components/servicos/list/servico-list.component').then(m => m.ServicoListComponent)
+                    }
+                ]
             }
         ]
     },

@@ -72,11 +72,16 @@ export class MainLayoutComponent implements OnInit, OnDestroy {
       icon: 'pi pi-chart-line',
       routerLink: '/dashboard'
     },
-    {
-      label: 'Barbearias',
-      icon: 'pi pi-building',
-      routerLink: '/barbearias'
-    },
+                {
+              label: 'Barbearias',
+              icon: 'pi pi-building',
+              routerLink: '/barbearias'
+            },
+            {
+              label: 'Serviços',
+              icon: 'pi pi-list',
+              routerLink: '/servicos'
+            },
     {
       label: 'Profissionais',
       icon: 'pi pi-users',
@@ -91,11 +96,6 @@ export class MainLayoutComponent implements OnInit, OnDestroy {
       label: 'Agendamentos',
       icon: 'pi pi-calendar',
       routerLink: '/agendamentos'
-    },
-    {
-      label: 'Serviços',
-      icon: 'pi pi-list',
-      routerLink: '/servicos'
     },
     {
       label: 'Relatórios',

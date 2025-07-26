@@ -1,0 +1,227 @@
+<div class="servico-list-container fade-in">
+  
+  <!-- Header da Página -->
+  <div class="page-header">
+    <div class="header-content">
+      <div class="header-text">
+        <h1>Gestão de Serviços</h1>
+        <p>Gerencie todos os serviços oferecidos pelas barbearias</p>
+      </div>
+      <div class="header-actions">
+        <button 
+          pButton 
+          type="button" 
+          label="Novo Serviço" 
+          icon="pi pi-plus"
+          class="p-button-success"
+          (click)="novoServico()">
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Filtros -->
+  <div class="filter-card">
+    <div class="filter-row">
+      <div class="filter-field">
+        <label for="busca">Buscar</label>
+        <input 
+          id="busca"
+          type="text" 
+          pInputText 
+          [(ngModel)]="termoBusca"
+          placeholder="Nome ou descrição do serviço..."
+          (input)="aplicarFiltros()">
+      </div>
+      
+      <div class="filter-field">
+        <label for="barbearia">Barbearia</label>
+        <select 
+          id="barbearia"
+          [(ngModel)]="filtro.barbeariaId"
+          (change)="aplicarFiltros()">
+          <option *ngFor="let opcao of opcoesBarbearia" [value]="opcao.value">
+            {{ opcao.label }}
+          </option>
+        </select>
+      </div>
+      
+      <div class="filter-field">
+        <label for="precoMin">Preço Mín.</label>
+        <input 
+          id="precoMin"
+          type="number" 
+          pInputText 
+          [(ngModel)]="filtro.precoMin"
+          placeholder="0.00"
+          (input)="aplicarFiltros()">
+      </div>
+      
+      <div class="filter-field">
+        <label for="precoMax">Preço Máx.</label>
+        <input 
+          id="precoMax"
+          type="number" 
+          pInputText 
+          [(ngModel)]="filtro.precoMax"
+          placeholder="999.99"
+          (input)="aplicarFiltros()">
+      </div>
+      
+      <div class="filter-actions">
+        <button 
+          pButton 
+          type="button" 
+          label="Limpar" 
+          icon="pi pi-refresh"
+          class="p-button-outlined"
+          (click)="limparFiltros()">
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading -->
+  <div class="loading-container" *ngIf="loading">
+    <p-progressSpinner 
+      strokeWidth="4" 
+      fill="var(--surface-color)" 
+      animationDuration=".5s">
+    </p-progressSpinner>
+    <p>Carregando serviços...</p>
+  </div>
+
+  <!-- Erro -->
+  <div class="error-container" *ngIf="error">
+    <p-message 
+      severity="error" 
+      [text]="error">
+    </p-message>
+  </div>
+
+  <!-- Tabela de Serviços -->
+  <div class="table-card" *ngIf="!loading">
+    <p-table 
+      [value]="servicosFiltradas"
+      [paginator]="true"
+      [rows]="rows"
+      [totalRecords]="totalRecords"
+      [first]="first"
+      [showCurrentPageReport]="true"
+      currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} serviços"
+      [rowsPerPageOptions]="[10, 25, 50]"
+      [loading]="loading"
+      (onPage)="onPageChange($event)"
+      (onSort)="onSort($event)"
+      styleClass="p-datatable-sm">
+      
+      <!-- Coluna Nome -->
+      <ng-template pTemplate="header">
+        <tr>
+          <th pSortableColumn="nome">
+            Nome
+            <p-sortIcon field="nome"></p-sortIcon>
+          </th>
+          <th pSortableColumn="descricao">
+            Descrição
+            <p-sortIcon field="descricao"></p-sortIcon>
+          </th>
+          <th pSortableColumn="preco">
+            Preço
+            <p-sortIcon field="preco"></p-sortIcon>
+          </th>
+          <th pSortableColumn="duracaoMinutos">
+            Duração
+            <p-sortIcon field="duracaoMinutos"></p-sortIcon>
+          </th>
+          <th pSortableColumn="barbeariaId">
+            Barbearia
+            <p-sortIcon field="barbeariaId"></p-sortIcon>
+          </th>
+          <th>Status</th>
+          <th>Ações</th>
+        </tr>
+      </ng-template>
+
+      <!-- Linhas da Tabela -->
+      <ng-template pTemplate="body" let-servico>
+        <tr>
+          <td>
+            <div class="servico-info">
+              <strong>{{ servico.nome }}</strong>
+            </div>
+          </td>
+          <td>
+            <span class="descricao">{{ servico.descricao }}</span>
+          </td>
+          <td>
+            <span class="preco">{{ formatarPreco(servico.preco) }}</span>
+          </td>
+          <td>
+            <span class="duracao">{{ formatarDuracao(servico.duracaoMinutos) }}</span>
+          </td>
+          <td>
+            <span class="barbearia">{{ getNomeBarbearia(servico.barbeariaId) }}</span>
+          </td>
+          <td>
+            <p-tag 
+              [value]="getStatusServico(servico).label"
+              [severity]="getStatusServico(servico).severity">
+            </p-tag>
+          </td>
+          <td>
+            <div class="acoes">
+              <button 
+                pButton 
+                type="button" 
+                icon="pi pi-pencil" 
+                class="p-button-text p-button-sm p-button-success"
+                pTooltip="Editar"
+                (click)="editarServico(servico)">
+              </button>
+              <button 
+                pButton 
+                type="button" 
+                icon="pi pi-trash" 
+                class="p-button-text p-button-sm p-button-danger"
+                pTooltip="Excluir"
+                (click)="confirmarExclusao(servico)">
+              </button>
+            </div>
+          </td>
+        </tr>
+      </ng-template>
+
+      <!-- Mensagem quando não há dados -->
+      <ng-template pTemplate="emptymessage">
+        <tr>
+          <td colspan="7" class="text-center">
+            <div class="empty-state">
+              <i class="pi pi-list" style="font-size: 3rem; color: var(--text-color-light);"></i>
+              <h3>Nenhum serviço encontrado</h3>
+              <p>Não há serviços cadastrados ou os filtros aplicados não retornaram resultados.</p>
+              <button 
+                pButton 
+                type="button" 
+                label="Cadastrar Primeiro Serviço" 
+                icon="pi pi-plus"
+                class="p-button-outlined"
+                (click)="novoServico()">
+              </button>
+            </div>
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </div>
+
+  <!-- Diálogo de confirmação -->
+  <p-confirmDialog></p-confirmDialog>
+</div>
+
+<!-- Modal de Serviço -->
+<app-servico-modal 
+  #servicoModal 
+  (servicoCriado)="onServicoCriado()"
+  (servicoEditado)="onServicoEditado()">
+</app-servico-modal> 

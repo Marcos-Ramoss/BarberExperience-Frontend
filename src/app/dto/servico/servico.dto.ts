@@ -1,6 +1,30 @@
-/**
- * DTO de resposta de serviço
- */
+// DTOs para o módulo de Serviços
+// Baseado no Swagger: /servicos
+
+export interface CriarServicoRequest {
+  nome: string;
+  descricao: string;
+  preco: number;
+  duracaoMinutos: number;
+  barbeariaId: number;
+}
+
+export interface UpdateServicoRequest {
+  nome: string;
+  descricao: string;
+  preco: number;
+  duracaoMinutos: number;
+  barbeariaId: number;
+}
+
+export interface AtualizarServicoRequest {
+  nome: string;
+  descricao: string;
+  preco: number;
+  duracaoMinutos: number;
+  barbeariaId: number;
+}
+
 export interface ServicoResponse {
   id: number;
   nome: string;
@@ -10,26 +34,11 @@ export interface ServicoResponse {
   barbeariaId: number;
 }
 
-/**
- * DTO de criação de serviço
- */
-export interface CriarServicoRequest {
-  nome: string;
-  descricao: string;
-  preco: number;
-  duracaoMinutos: number;
-  barbeariaId: number;
-}
-
-/**
- * DTO de atualização de serviço
- */
-export interface UpdateServicoRequest {
+export interface ServicoFilter {
   nome?: string;
-  descricao?: string;
-  preco?: number;
-  duracaoMinutos?: number;
   barbeariaId?: number;
+  precoMin?: number;
+  precoMax?: number;
 }
 
 /**
@@ -40,17 +49,6 @@ export interface ServicoDto {
   nome: string;
   preco: string;
   duracaoMinutos: number;
-}
-
-/**
- * DTO de filtro de serviço
- */
-export interface ServicoFilter {
-  nome?: string;
-  barbeariaId?: number;
-  precoMin?: number;
-  precoMax?: number;
-  ativo?: boolean;
 }
 
 /**
