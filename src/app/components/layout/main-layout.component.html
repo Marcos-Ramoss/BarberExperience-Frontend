@@ -1,0 +1,88 @@
+<div class="layout-wrapper">
+  <!-- Sidebar -->
+  <div class="layout-sidebar" [class.sidebar-collapsed]="!sidebarVisible">
+    <div class="sidebar-header">
+      <div class="logo">
+        <i class="pi pi-cut"></i>
+        <span class="logo-text">Barber Experience</span>
+      </div>
+      <button 
+        pButton 
+        icon="pi pi-times" 
+        class="p-button-text p-button-rounded sidebar-close"
+        (click)="toggleSidebar()">
+      </button>
+    </div>
+
+    <nav class="sidebar-nav">
+      <ul class="nav-menu">
+        <li *ngFor="let item of menuItems" class="nav-item">
+          <a 
+            [routerLink]="item.routerLink" 
+            routerLinkActive="active"
+            [routerLinkActiveOptions]="item.routerLink === '/dashboard' ? {exact: true} : {exact: false}"
+            class="nav-link">
+            <i [class]="item.icon"></i>
+            <span class="nav-text">{{ item.label }}</span>
+          </a>
+        </li>
+      </ul>
+    </nav>
+  </div>
+
+  <!-- Mobile Sidebar Overlay -->
+  <div 
+    class="sidebar-overlay" 
+    [class.visible]="mobileSidebarVisible"
+    (click)="toggleMobileSidebar()">
+  </div>
+
+  <!-- Main Content -->
+  <div class="layout-main" [class.sidebar-collapsed]="!sidebarVisible">
+    <!-- Topbar -->
+    <header class="layout-topbar">
+      <div class="topbar-left">
+        <button 
+          pButton 
+          icon="pi pi-bars" 
+          class="p-button-text p-button-rounded sidebar-toggle"
+          (click)="toggleSidebar()">
+        </button>
+        
+        <p-breadcrumb 
+          [home]="home" 
+          [model]="breadcrumbItems"
+          styleClass="topbar-breadcrumb">
+        </p-breadcrumb>
+      </div>
+
+      <div class="topbar-right">
+        <div class="user-menu">
+          <button 
+            pButton 
+            icon="pi pi-user" 
+            class="p-button-text p-button-rounded user-avatar"
+            (click)="userMenu.toggle($event)">
+            <p-avatar 
+              [label]="getUserInitial()" 
+              shape="circle" 
+              size="normal">
+            </p-avatar>
+          </button>
+          
+          <p-menu 
+            #userMenu 
+            [popup]="true" 
+            [model]="userMenuItems"
+            styleClass="user-dropdown">
+          </p-menu>
+        </div>
+      </div>
+    </header>
+
+    <!-- Page Content -->
+    <main class="layout-content">
+      <ng-content></ng-content>
+    </main>
+  </div>
+</div> 

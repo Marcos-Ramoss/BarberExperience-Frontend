@@ -253,12 +253,12 @@ export class AuthService {
     const accessToken = response.token || response.access_token;
     const refreshToken = response.refreshToken || response.refresh_token;
     
-    if (accessToken) {
-      this.saveTokens(accessToken, refreshToken || '');
-      this.currentUserSubject.next(response.user || null);
-      this.isAuthenticatedSubject.next(true);
-      this.router.navigate(['/dashboard']);
-    } else {
+            if (accessToken) {
+          this.saveTokens(accessToken, refreshToken || '');
+          this.currentUserSubject.next(response.user || null);
+          this.isAuthenticatedSubject.next(true);
+          this.router.navigate(['/welcome']);
+        } else {
       console.error('Token não encontrado na resposta:', response);
       this.setError('Erro: Token não encontrado na resposta do servidor');
     }

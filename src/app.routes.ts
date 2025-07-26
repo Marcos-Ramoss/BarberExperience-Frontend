@@ -3,7 +3,7 @@ import { Routes } from '@angular/router';
 export const appRoutes: Routes = [
     {
         path: '',
-        redirectTo: '/auth/login',
+        redirectTo: '/welcome',
         pathMatch: 'full'
     },
     {
@@ -21,32 +21,39 @@ export const appRoutes: Routes = [
         ]
     },
     {
-        path: 'dashboard',
-        loadComponent: () => import('./app/components/dashboard/dashboard.component').then(m => m.DashboardComponent)
-    },
-    {
-        path: 'barbearias',
+        path: '',
+        loadComponent: () => import('./app/components/layout/layout-wrapper.component').then(m => m.LayoutWrapperComponent),
         children: [
             {
-                path: '',
-                loadComponent: () => import('./app/components/barbearias/list/barbearia-list.component').then(m => m.BarbeariaListComponent)
+                path: 'welcome',
+                loadComponent: () => import('./app/components/welcome/welcome.component').then(m => m.WelcomeComponent)
             },
             {
-                path: 'nova',
-                loadComponent: () => import('./app/components/barbearias/form/barbearia-form.component').then(m => m.BarbeariaFormComponent)
+                path: 'dashboard',
+                loadComponent: () => import('./app/components/dashboard/dashboard.component').then(m => m.DashboardComponent)
             },
             {
-                path: 'editar/:id',
-                loadComponent: () => import('./app/components/barbearias/form/barbearia-form.component').then(m => m.BarbeariaFormComponent)
+                path: 'barbearias',
+                children: [
+                    {
+                        path: '',
+                        loadComponent: () => import('./app/components/barbearias/list/barbearia-list.component').then(m => m.BarbeariaListComponent)
+                    },
+                    {
+                        path: 'nova',
+                        loadComponent: () => import('./app/components/barbearias/form/barbearia-form.component').then(m => m.BarbeariaFormComponent)
+                    },
+                    {
+                        path: 'editar/:id',
+                        loadComponent: () => import('./app/components/barbearias/form/barbearia-form.component').then(m => m.BarbeariaFormComponent)
+                    }
+                ]
             }
         ]
     },
-    {
-        path: 'home',
-        loadComponent: () => import('./app.component').then(m => m.AppComponent)
-    },
+
     {
         path: '**',
-        redirectTo: '/auth/login'
+        redirectTo: '/welcome'
     }
 ];

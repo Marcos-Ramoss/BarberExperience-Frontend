@@ -1,0 +1,90 @@
+<div class="welcome-container fade-in">
+  <div class="welcome-content">
+    <div class="welcome-header">
+      <div class="welcome-avatar">
+        <p-avatar 
+          icon="pi pi-user" 
+          size="xlarge" 
+          shape="circle"
+          styleClass="welcome-avatar-style">
+        </p-avatar>
+      </div>
+      
+      <div class="welcome-text">
+        <h1 class="welcome-title">
+          {{ greeting }}, {{ userName }}! 👋
+        </h1>
+        <p class="welcome-subtitle">
+          Bem-vindo ao Barber Experience
+        </p>
+        <p class="welcome-time">
+          {{ currentTime }}
+        </p>
+      </div>
+    </div>
+
+    <p-divider></p-divider>
+
+    <div class="welcome-cards">
+      <div class="welcome-card">
+        <div class="card-icon">
+          <i class="pi pi-home"></i>
+        </div>
+        <div class="card-content">
+          <h3>Dashboard</h3>
+          <p>Visualize estatísticas e métricas do seu negócio</p>
+          <button 
+            pButton 
+            type="button" 
+            label="Acessar Dashboard" 
+            icon="pi pi-arrow-right"
+            class="p-button-success"
+            (click)="navigateToDashboard()">
+          </button>
+        </div>
+      </div>
+
+      <div class="welcome-card">
+        <div class="card-icon">
+          <i class="pi pi-building"></i>
+        </div>
+        <div class="card-content">
+          <h3>Barbearias</h3>
+          <p>Gerencie suas barbearias e configurações</p>
+          <button 
+            pButton 
+            type="button" 
+            label="Gerenciar Barbearias" 
+            icon="pi pi-arrow-right"
+            class="p-button-outlined p-button-success"
+            routerLink="/barbearias">
+          </button>
+        </div>
+      </div>
+
+      <div class="welcome-card">
+        <div class="card-icon">
+          <i class="pi pi-calendar"></i>
+        </div>
+        <div class="card-content">
+          <h3>Agendamentos</h3>
+          <p>Visualize e gerencie todos os agendamentos</p>
+          <button 
+            pButton 
+            type="button" 
+            label="Ver Agendamentos" 
+            icon="pi pi-arrow-right"
+            class="p-button-outlined p-button-success"
+            routerLink="/agendamentos">
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="welcome-footer">
+      <p class="footer-text">
+        Use o menu lateral para navegar entre as funcionalidades do sistema
+      </p>
+    </div>
+  </div>
+</div> 

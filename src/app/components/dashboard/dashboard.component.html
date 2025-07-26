@@ -1,4 +1,4 @@
-<div class="dashboard-container">
+<div class="dashboard-container fade-in">
   <!-- Header do Dashboard -->
   <div class="dashboard-header">
     <div class="header-content">
@@ -15,10 +15,10 @@
           styleClass="p-button-outlined">
         </p-button>
         <p-button 
-          icon="pi pi-sign-out" 
-          label="Sair" 
-          (onClick)="logout()"
-          styleClass="p-button-outlined">
+          icon="pi pi-plus" 
+          label="Nova Barbearia" 
+          routerLink="/barbearias/nova"
+          styleClass="p-button-success">
         </p-button>
       </div>
     </div>
