@@ -1,12 +1,10 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, of } from 'rxjs';
-import { catchError, delay } from 'rxjs/operators';
+import { Observable, of, forkJoin } from 'rxjs';
+import { catchError, delay, map } from 'rxjs/operators';
 import { BaseRepository } from './base.repository';
 import { environment } from '../../environments/environment';
 import { AtividadeRecente, DashboardData, DashboardStats } from '@/dto/dashboard/dashboard.dto';
-
-
 
 /**
  * Repositório para operações do dashboard
@@ -23,60 +21,118 @@ export class DashboardRepository extends BaseRepository<DashboardData, any, any>
   }
 
   /**
-   * Obter dados do dashboard
+   * Obter dados do dashboard usando endpoints reais
    */
   getDashboardData(): Observable<DashboardData> {
-    // Mock data enquanto o backend não tem os endpoints
-    const mockData: DashboardData = {
-      stats: {
-        totalBarbearias: 5,
-        totalProfissionais: 12,
-        totalClientes: 150,
-        totalAgendamentos: 89,
-        agendamentosHoje: 8,
-        agendamentosSemana: 45,
-        faturamentoMes: 12500.50,
-        faturamentoAno: 145000.75
-      },
-      atividadesRecentes: [
-        {
-          id: 1,
-          tipo: 'AGENDAMENTO',
-          descricao: 'Novo agendamento criado',
-          data: new Date().toISOString(),
-          usuario: 'João Silva',
-          valor: 45.00
-        },
-        {
-          id: 2,
-          tipo: 'CADASTRO',
-          descricao: 'Novo cliente cadastrado',
-          data: new Date(Date.now() - 3600000).toISOString(),
-          usuario: 'Maria Santos'
-        },
-        {
-          id: 3,
-          tipo: 'PAGAMENTO',
-          descricao: 'Pagamento realizado',
-          data: new Date(Date.now() - 7200000).toISOString(),
-          usuario: 'Pedro Costa',
-          valor: 30.00
-        },
-        {
-          id: 4,
-          tipo: 'CANCELAMENTO',
-          descricao: 'Agendamento cancelado',
-          data: new Date(Date.now() - 10800000).toISOString(),
-          usuario: 'Ana Oliveira'
-        }
-      ],
-      agendamentosProximos: [],
-      graficoAgendamentos: []
-    };
+    // Buscar dados de todos os endpoints reais
+    return forkJoin({
+      barbearias: this.http.get<any[]>(`${this.baseUrl}/barbearias`, { headers: this.getAuthHeaders() }),
+      profissionais: this.http.get<any[]>(`${this.baseUrl}/profissionais`, { headers: this.getAuthHeaders() }),
+      clientes: this.http.get<any[]>(`${this.baseUrl}/clientes`, { headers: this.getAuthHeaders() }),
+      agendamentos: this.http.get<any[]>(`${this.baseUrl}/agendamentos`, { headers: this.getAuthHeaders() })
+    }).pipe(
+      map(response => {
+        const hoje = new Date();
+        const inicioSemana = new Date(hoje);
+        inicioSemana.setDate(hoje.getDate() - hoje.getDay());
+        inicioSemana.setHours(0, 0, 0, 0);
+        
+        const inicioMes = new Date(hoje.getFullYear(), hoje.getMonth(), 1);
+        const inicioAno = new Date(hoje.getFullYear(), 0, 1);
 
-    return of(mockData).pipe(
-      // Simular delay de rede
-      delay(500)
+        // Filtrar agendamentos por período
+        const agendamentosHoje = response.agendamentos.filter((agendamento: any) => {
+          const dataAgendamento = new Date(agendamento.horario);
+          return dataAgendamento.toDateString() === hoje.toDateString();
+        });
+
+        const agendamentosSemana = response.agendamentos.filter((agendamento: any) => {
+          const dataAgendamento = new Date(agendamento.horario);
+          return dataAgendamento >= inicioSemana;
+        });
+
+        const agendamentosMes = response.agendamentos.filter((agendamento: any) => {
+          const dataAgendamento = new Date(agendamento.horario);
+          return dataAgendamento >= inicioMes;
+        });
+
+        const agendamentosAno = response.agendamentos.filter((agendamento: any) => {
+          const dataAgendamento = new Date(agendamento.horario);
+          return dataAgendamento >= inicioAno;
+        });
+
+        // Calcular faturamento (soma dos valores dos serviços)
+        const calcularFaturamento = (agendamentos: any[]) => {
+          return agendamentos.reduce((total, agendamento) => {
+            const valorServicos = agendamento.servicos?.reduce((sum: number, servico: any) => {
+              // Lidar com diferentes formatos de preço
+              let preco = 0;
+              if (typeof servico.preco === 'string') {
+                // Remover "R$ " e converter para número
+                preco = parseFloat(servico.preco.replace('R$ ', '').replace(',', '.')) || 0;
+              } else if (typeof servico.preco === 'number') {
+                preco = servico.preco;
+              }
+              return sum + preco;
+            }, 0) || 0;
+            return total + valorServicos;
+          }, 0);
+        };
+
+        const faturamentoMes = calcularFaturamento(agendamentosMes);
+        const faturamentoAno = calcularFaturamento(agendamentosAno);
+
+        // Gerar atividades recentes baseadas nos agendamentos
+        const atividadesRecentes = response.agendamentos
+          .slice(0, 5) // Últimos 5 agendamentos
+          .map((agendamento: any, index: number) => {
+            const valorTotal = agendamento.servicos?.reduce((sum: number, servico: any) => {
+              // Lidar com diferentes formatos de preço
+              let preco = 0;
+              if (typeof servico.preco === 'string') {
+                // Remover "R$ " e converter para número
+                preco = parseFloat(servico.preco.replace('R$ ', '').replace(',', '.')) || 0;
+              } else if (typeof servico.preco === 'number') {
+                preco = servico.preco;
+              }
+              return sum + preco;
+            }, 0) || 0;
+
+            return {
+              id: agendamento.id,
+              tipo: 'AGENDAMENTO' as const,
+              descricao: `Agendamento para ${agendamento.cliente?.nome || 'Cliente'}`,
+              data: agendamento.horario,
+              usuario: agendamento.profissional?.nome || 'Profissional',
+              valor: valorTotal
+            };
+          });
+
+        const dashboardData: DashboardData = {
+          stats: {
+            totalBarbearias: response.barbearias.length,
+            totalProfissionais: response.profissionais.length,
+            totalClientes: response.clientes.length,
+            totalAgendamentos: response.agendamentos.length,
+            agendamentosHoje: agendamentosHoje.length,
+            agendamentosSemana: agendamentosSemana.length,
+            faturamentoMes: faturamentoMes,
+            faturamentoAno: faturamentoAno
+          },
+          atividadesRecentes: atividadesRecentes,
+          agendamentosProximos: response.agendamentos
+            .filter((agendamento: any) => new Date(agendamento.horario) > hoje)
+            .slice(0, 10),
+          graficoAgendamentos: []
+        };
+
+        return dashboardData;
+      }),
+      catchError(error => {
+        console.error('Erro ao carregar dados do dashboard:', error);
+        // Fallback para dados mock em caso de erro
+        return this.getMockData();
+      })
     );
   }
 
@@ -84,39 +140,62 @@ export class DashboardRepository extends BaseRepository<DashboardData, any, any>
    * Obter estatísticas
    */
   getStats(): Observable<DashboardStats> {
-    return this.http.get<DashboardStats>(`${this.baseUrl}/dashboard/stats`)
-      .pipe(
-        catchError(this.handleError)
-      );
+    return this.getDashboardData().pipe(
+      map(data => data.stats)
+    );
   }
 
   /**
    * Obter atividades recentes
    */
   getAtividadesRecentes(): Observable<AtividadeRecente[]> {
-    return this.http.get<AtividadeRecente[]>(`${this.baseUrl}/dashboard/atividades`)
-      .pipe(
-        catchError(this.handleError)
-      );
+    return this.getDashboardData().pipe(
+      map(data => data.atividadesRecentes)
+    );
   }
 
   /**
    * Obter agendamentos próximos
    */
   getAgendamentosProximos(): Observable<any[]> {
-    return this.http.get<any[]>(`${this.baseUrl}/dashboard/agendamentos-proximos`)
-      .pipe(
-        catchError(this.handleError)
-      );
+    return this.getDashboardData().pipe(
+      map(data => data.agendamentosProximos)
+    );
   }
 
   /**
    * Obter dados para gráfico de agendamentos
    */
   getGraficoAgendamentos(periodo: 'dia' | 'semana' | 'mes' = 'semana'): Observable<any[]> {
-    return this.http.get<any[]>(`${this.baseUrl}/dashboard/grafico-agendamentos?periodo=${periodo}`)
+    return this.http.get<any[]>(`${this.baseUrl}/dashboard/grafico-agendamentos?periodo=${periodo}`, { headers: this.getAuthHeaders() })
       .pipe(
-        catchError(this.handleError)
+        catchError(error => {
+          console.error('Erro ao carregar gráfico de agendamentos:', error);
+          return of([]);
+        })
       );
+  }
+
+  /**
+   * Dados mock para fallback
+   */
+  private getMockData(): Observable<DashboardData> {
+    const mockData: DashboardData = {
+      stats: {
+        totalBarbearias: 0,
+        totalProfissionais: 0,
+        totalClientes: 0,
+        totalAgendamentos: 0,
+        agendamentosHoje: 0,
+        agendamentosSemana: 0,
+        faturamentoMes: 0,
+        faturamentoAno: 0
+      },
+      atividadesRecentes: [],
+      agendamentosProximos: [],
+      graficoAgendamentos: []
+    };
+
+    return of(mockData).pipe(delay(100));
   }
 } 
