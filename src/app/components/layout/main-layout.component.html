@@ -16,7 +16,7 @@
 
     <nav class="sidebar-nav">
       <ul class="nav-menu">
-        <li *ngFor="let item of menuItems" class="nav-item">
+        <li *ngFor="let item of getMenuItems()" class="nav-item">
           <a 
             [routerLink]="item.routerLink" 
             routerLinkActive="active"

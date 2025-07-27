@@ -1,6 +1,7 @@
 import { Component, OnInit, OnDestroy, Output, EventEmitter, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 
@@ -48,6 +49,7 @@ export class ProfissionalModalComponent implements OnInit, OnDestroy {
   profissionalForm!: FormGroup;
   modoEdicao = false;
   profissionalId: number | null = null;
+  profissionalCriadoId: number | null = null; // ID do profissional recém-criado
   
   @Input() profissionalParaEditar: ProfissionalResponse | null = null;
   @Output() profissionalCriado = new EventEmitter<void>();
@@ -69,7 +71,8 @@ export class ProfissionalModalComponent implements OnInit, OnDestroy {
     private fb: FormBuilder,
     private profissionalService: ProfissionalService,
     private barbeariaService: BarbeariaService,
-    private messageService: MessageService
+    private messageService: MessageService,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
@@ -84,23 +87,46 @@ export class ProfissionalModalComponent implements OnInit, OnDestroy {
 
   show(profissional?: ProfissionalResponse): void {
     this.visible = true;
+    this.profissionalCriadoId = null; // Reset do ID do profissional criado
     
     if (profissional) {
       this.modoEdicao = true;
       this.profissionalId = profissional.id;
       this.carregarDadosParaEdicao(profissional);
+      
+      // Remover validações obrigatórias dos campos de senha no modo edição
+      this.profissionalForm.get('senha')?.clearValidators();
+      this.profissionalForm.get('confirmarSenha')?.clearValidators();
+      this.profissionalForm.get('senha')?.updateValueAndValidity();
+      this.profissionalForm.get('confirmarSenha')?.updateValueAndValidity();
     } else {
       this.modoEdicao = false;
       this.profissionalId = null;
       this.resetForm();
+      
+      // Adicionar validações obrigatórias dos campos de senha no modo criação
+      this.profissionalForm.get('senha')?.setValidators([Validators.required, Validators.minLength(6)]);
+      this.profissionalForm.get('confirmarSenha')?.setValidators([Validators.required]);
+      this.profissionalForm.get('senha')?.updateValueAndValidity();
+      this.profissionalForm.get('confirmarSenha')?.updateValueAndValidity();
     }
   }
 
   hide(): void {
     this.visible = false;
-    this.resetForm();
-    this.modoEdicao = false;
-    this.profissionalId = null;
+    this.profissionalCriadoId = null; // Reset do ID do profissional criado
+  }
+
+  /**
+   * Acessar dashboard do profissional recém-criado
+   */
+  acessarDashboard(): void {
+    if (this.profissionalCriadoId) {
+      this.router.navigate(['/dashboard-profissional'], { 
+        queryParams: { profissionalId: this.profissionalCriadoId } 
+      });
+      this.hide();
+    }
   }
 
   private initForm(): void {
@@ -110,13 +136,34 @@ export class ProfissionalModalComponent implements OnInit, OnDestroy {
       telefone: ['', [Validators.required]],
       email: ['', [Validators.required, Validators.email]],
       especialidades: [[], [Validators.required, Validators.minLength(1)]],
-      barbeariaId: ['', [Validators.required]]
-    });
+      barbeariaId: ['', [Validators.required]],
+      // Campos de senha (apenas para criação)
+      senha: ['', [Validators.required, Validators.minLength(6)]],
+      confirmarSenha: ['', [Validators.required]]
+    }, { validators: this.senhasIguaisValidator });
+  }
+
+  /**
+   * Validador para verificar se as senhas são iguais
+   */
+  private senhasIguaisValidator(form: FormGroup): { [key: string]: any } | null {
+    const senha = form.get('senha');
+    const confirmarSenha = form.get('confirmarSenha');
+    
+    if (senha && confirmarSenha && senha.value !== confirmarSenha.value) {
+      return { senhasDiferentes: true };
+    }
+    
+    return null;
   }
 
   private resetForm(): void {
     this.profissionalForm.reset();
     this.profissionalForm.markAsUntouched();
+    
+    // Resetar validações de senha
+    this.profissionalForm.get('senha')?.setErrors(null);
+    this.profissionalForm.get('confirmarSenha')?.setErrors(null);
   }
 
   private carregarDadosParaEdicao(profissional: ProfissionalResponse): void {
@@ -127,6 +174,7 @@ export class ProfissionalModalComponent implements OnInit, OnDestroy {
       email: profissional.email,
       especialidades: profissional.especialidades,
       barbeariaId: profissional.barbeariaId
+      // Não incluir senhas na edição
     });
   }
 
@@ -200,7 +248,9 @@ export class ProfissionalModalComponent implements OnInit, OnDestroy {
           telefone: formData.telefone,
           email: formData.email,
           especialidades: formData.especialidades,
-          barbeariaId: formData.barbeariaId
+          barbeariaId: formData.barbeariaId,
+          senha: formData.senha,
+          confirmarSenha: formData.confirmarSenha
         };
 
         this.profissionalService.criarProfissional(profissionalData)
@@ -208,6 +258,7 @@ export class ProfissionalModalComponent implements OnInit, OnDestroy {
           .subscribe({
             next: (response) => {
               this.loading = false;
+              this.profissionalCriadoId = response.id; // Armazena o ID do profissional criado
               
               // Toast de sucesso
               this.messageService.add({
@@ -260,6 +311,12 @@ export class ProfissionalModalComponent implements OnInit, OnDestroy {
       if (field.errors['required']) return 'Campo obrigatório';
       if (field.errors['email']) return 'Email inválido';
       if (field.errors['minlength']) return `Mínimo de ${field.errors['minlength'].requiredLength} caracteres`;
+    }
+    
+    // Validação específica para senhas diferentes
+    if (this.profissionalForm.errors?.['senhasDiferentes'] && 
+        (fieldName === 'senha' || fieldName === 'confirmarSenha')) {
+      return 'As senhas não coincidem';
     }
     
     return '';

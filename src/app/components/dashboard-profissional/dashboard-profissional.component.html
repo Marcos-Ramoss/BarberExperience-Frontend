@@ -1,0 +1,300 @@
+<div class="dashboard-profissional">
+  <!-- Loading -->
+  <div *ngIf="loading" class="loading-container">
+    <p-progressSpinner></p-progressSpinner>
+    <p>Carregando dashboard...</p>
+  </div>
+
+  <!-- Error Message -->
+  <div *ngIf="errorMessage" class="error-container">
+    <p-message severity="error" [text]="errorMessage"></p-message>
+  </div>
+
+  <!-- Dashboard Content -->
+  <div *ngIf="!loading && !errorMessage" class="dashboard-content">
+    
+    <!-- Header -->
+    <div class="dashboard-header">
+      <div class="header-info">
+        <h1>Dashboard Profissional</h1>
+        <p *ngIf="dashboardData?.profissional?.nome">
+          Bem-vindo, {{ dashboardData?.profissional?.nome }}!
+        </p>
+      </div>
+      <div class="header-actions">
+        <p-button 
+          icon="pi pi-refresh" 
+          label="Atualizar" 
+          (onClick)="refreshDashboard()"
+          [loading]="loading">
+        </p-button>
+        <p-button 
+          icon="pi pi-sign-out" 
+          label="Sair" 
+          severity="secondary"
+          (onClick)="logout()">
+        </p-button>
+      </div>
+    </div>
+
+    <!-- Statistics Cards -->
+    <div class="stats-grid" *ngIf="estatisticas">
+      <p-card class="stat-card">
+        <div class="stat-content">
+          <div class="stat-icon">
+            <i class="pi pi-calendar"></i>
+          </div>
+          <div class="stat-info">
+            <h3>{{ estatisticas.agendamentosHoje }}</h3>
+            <p>Agendamentos Hoje</p>
+          </div>
+        </div>
+      </p-card>
+
+      <p-card class="stat-card">
+        <div class="stat-content">
+          <div class="stat-icon">
+            <i class="pi pi-dollar"></i>
+          </div>
+          <div class="stat-info">
+            <h3>{{ formatCurrency(estatisticas.faturamentoHoje) }}</h3>
+            <p>Faturamento Hoje</p>
+          </div>
+        </div>
+      </p-card>
+
+      <p-card class="stat-card">
+        <div class="stat-content">
+          <div class="stat-icon">
+            <i class="pi pi-users"></i>
+          </div>
+          <div class="stat-info">
+            <h3>{{ estatisticas.clientesAtendidos }}</h3>
+            <p>Clientes Atendidos</p>
+          </div>
+        </div>
+      </p-card>
+
+      <p-card class="stat-card">
+        <div class="stat-content">
+          <div class="stat-icon">
+            <i class="pi pi-star"></i>
+          </div>
+          <div class="stat-info">
+            <h3>{{ estatisticas.avaliacaoMedia }}/5</h3>
+            <p>Avaliação Média</p>
+          </div>
+        </div>
+      </p-card>
+
+      <p-card class="stat-card">
+        <div class="stat-content">
+          <div class="stat-icon">
+            <i class="pi pi-calendar-plus"></i>
+          </div>
+          <div class="stat-info">
+            <h3>{{ estatisticas.agendamentosMes }}</h3>
+            <p>Agendamentos Mês</p>
+          </div>
+        </div>
+      </p-card>
+
+      <p-card class="stat-card">
+        <div class="stat-content">
+          <div class="stat-icon">
+            <i class="pi pi-dollar"></i>
+          </div>
+          <div class="stat-info">
+            <h3>{{ formatCurrency(estatisticas.faturamentoMes) }}</h3>
+            <p>Faturamento Mês</p>
+          </div>
+        </div>
+      </p-card>
+    </div>
+
+    <!-- Charts Section -->
+    <div class="charts-section">
+      <div class="chart-row">
+        <p-card header="Agendamentos por Período" class="chart-card">
+          <p-chart 
+            type="bar" 
+            [data]="chartDataAgendamentos" 
+            [options]="chartOptions">
+          </p-chart>
+        </p-card>
+
+        <p-card header="Faturamento por Período" class="chart-card">
+          <p-chart 
+            type="line" 
+            [data]="chartDataFaturamento" 
+            [options]="chartOptions">
+          </p-chart>
+        </p-card>
+      </div>
+
+      <div class="chart-row">
+        <p-card header="Serviços Mais Realizados" class="chart-card">
+          <p-chart 
+            type="doughnut" 
+            [data]="chartDataServicos" 
+            [options]="chartOptions">
+          </p-chart>
+        </p-card>
+      </div>
+    </div>
+
+    <!-- Agenda and Lists Section -->
+    <div class="content-section">
+      <div class="content-row">
+        
+        <!-- Agenda de Hoje -->
+        <p-card header="Agenda de Hoje" class="content-card">
+          <div *ngIf="agendaHoje.length === 0" class="empty-state">
+            <i class="pi pi-calendar-times"></i>
+            <p>Nenhum agendamento para hoje</p>
+          </div>
+          
+          <div *ngFor="let agendamento of agendaHoje" class="agendamento-item">
+            <div class="agendamento-info">
+              <div class="cliente-info">
+                <p-avatar 
+                  [label]="agendamento.cliente.nome.charAt(0)" 
+                  size="normal">
+                </p-avatar>
+                <div>
+                  <h4>{{ agendamento.cliente.nome }}</h4>
+                  <p>{{ formatDateTime(agendamento.horario) }}</p>
+                </div>
+              </div>
+              <div class="agendamento-details">
+                <p-tag 
+                  [value]="agendamento.status" 
+                  [severity]="getStatusSeverity(agendamento.status)">
+                </p-tag>
+                <p class="valor">{{ formatCurrency(calcularValorAgendamento(agendamento)) }}</p>
+              </div>
+            </div>
+            <div class="servicos-list">
+              <span *ngFor="let servico of agendamento.servicos" class="servico-tag">
+                {{ servico.nome }}
+              </span>
+            </div>
+          </div>
+        </p-card>
+
+        <!-- Próximos Agendamentos -->
+        <p-card header="Próximos Agendamentos" class="content-card">
+          <div *ngIf="proximosAgendamentos.length === 0" class="empty-state">
+            <i class="pi pi-calendar-times"></i>
+            <p>Nenhum agendamento futuro</p>
+          </div>
+          
+          <div *ngFor="let agendamento of proximosAgendamentos" class="agendamento-item">
+            <div class="agendamento-info">
+              <div class="cliente-info">
+                <p-avatar 
+                  [label]="agendamento.cliente.nome.charAt(0)" 
+                  size="normal">
+                </p-avatar>
+                <div>
+                  <h4>{{ agendamento.cliente.nome }}</h4>
+                  <p>{{ formatDateTime(agendamento.horario) }}</p>
+                </div>
+              </div>
+              <div class="agendamento-details">
+                <p-tag 
+                  [value]="agendamento.status" 
+                  [severity]="getStatusSeverity(agendamento.status)">
+                </p-tag>
+                <p class="valor">{{ formatCurrency(calcularValorAgendamento(agendamento)) }}</p>
+              </div>
+            </div>
+            <div class="servicos-list">
+              <span *ngFor="let servico of agendamento.servicos" class="servico-tag">
+                {{ servico.nome }}
+              </span>
+            </div>
+          </div>
+        </p-card>
+      </div>
+
+      <div class="content-row">
+        
+        <!-- Clientes Frequentes -->
+        <p-card header="Clientes Frequentes" class="content-card">
+          <div *ngIf="!dashboardData?.clientesFrequentes || dashboardData?.clientesFrequentes?.length === 0" class="empty-state">
+            <i class="pi pi-users"></i>
+            <p>Nenhum cliente frequente</p>
+          </div>
+          
+          <div *ngFor="let clienteFreq of dashboardData?.clientesFrequentes" class="cliente-item">
+            <div class="cliente-info">
+              <p-avatar 
+                [label]="clienteFreq.cliente.nome.charAt(0)" 
+                size="normal">
+              </p-avatar>
+              <div>
+                <h4>{{ clienteFreq.cliente.nome }}</h4>
+                <p>{{ clienteFreq.totalAgendamentos }} agendamentos</p>
+              </div>
+            </div>
+            <div class="cliente-details">
+              <p>Última visita: {{ formatDate(clienteFreq.ultimaVisita) }}</p>
+            </div>
+          </div>
+        </p-card>
+
+        <!-- Serviços Mais Realizados -->
+        <p-card header="Serviços Mais Realizados" class="content-card">
+          <div *ngIf="!dashboardData?.servicosMaisRealizados || dashboardData?.servicosMaisRealizados?.length === 0" class="empty-state">
+            <i class="pi pi-scissors"></i>
+            <p>Nenhum serviço realizado</p>
+          </div>
+          
+          <div *ngFor="let servicoRealizado of dashboardData?.servicosMaisRealizados" class="servico-item">
+            <div class="servico-info">
+              <div class="servico-icon">
+                <i class="pi pi-scissors"></i>
+              </div>
+              <div>
+                <h4>{{ servicoRealizado.servico.nome }}</h4>
+                <p>{{ servicoRealizado.quantidade }} realizados</p>
+              </div>
+            </div>
+            <div class="servico-details">
+              <p class="faturamento">{{ formatCurrency(servicoRealizado.faturamento) }}</p>
+            </div>
+          </div>
+        </p-card>
+      </div>
+    </div>
+
+    <!-- Recent Activities -->
+    <div class="recent-activities">
+      <p-card header="Atividades Recentes">
+        <div *ngIf="agendamentosRecentes.length === 0" class="empty-state">
+          <i class="pi pi-clock"></i>
+          <p>Nenhuma atividade recente</p>
+        </div>
+        
+        <div *ngFor="let agendamento of agendamentosRecentes" class="activity-item">
+          <div class="activity-icon">
+            <i class="pi pi-calendar-check"></i>
+          </div>
+          <div class="activity-content">
+            <h4>Agendamento com {{ agendamento.cliente.nome }}</h4>
+            <p>{{ formatDateTime(agendamento.horario) }}</p>
+            <div class="activity-details">
+              <p-tag 
+                [value]="agendamento.status" 
+                [severity]="getStatusSeverity(agendamento.status)">
+              </p-tag>
+              <span class="valor">{{ formatCurrency(calcularValorAgendamento(agendamento)) }}</span>
+            </div>
+          </div>
+        </div>
+      </p-card>
+    </div>
+
+  </div>
+</div> 

@@ -76,6 +76,10 @@ export const appRoutes: Routes = [
                         loadComponent: () => import('./app/components/agendamentos/list/agendamento-list.component').then(m => m.AgendamentoListComponent)
                     }
                 ]
+            },
+            {
+                path: 'dashboard-profissional',
+                loadComponent: () => import('./app/components/dashboard-profissional/dashboard-profissional.component').then(m => m.DashboardProfissionalComponent)
             }
         ]
     },

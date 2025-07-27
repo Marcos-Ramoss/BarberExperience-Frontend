@@ -135,4 +135,14 @@ export class AuthRepository extends BaseRepository<UserDto, RegisterRequestDto, 
         catchError(this.handleError)
       );
   }
+
+  /**
+   * Buscar profissional por username (email/CPF)
+   */
+  buscarProfissionalPorUsername(username: string): Observable<any> {
+    return this.http.get<any>(`${this.baseUrl}/auth/profissionais/username/${username}`)
+      .pipe(
+        catchError(this.handleError)
+      );
+  }
 } 

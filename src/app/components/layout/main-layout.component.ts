@@ -72,16 +72,16 @@ export class MainLayoutComponent implements OnInit, OnDestroy {
       icon: 'pi pi-chart-line',
       routerLink: '/dashboard'
     },
-                {
-              label: 'Barbearias',
-              icon: 'pi pi-building',
-              routerLink: '/barbearias'
-            },
-            {
-              label: 'Serviços',
-              icon: 'pi pi-list',
-              routerLink: '/servicos'
-            },
+    {
+      label: 'Barbearias',
+      icon: 'pi pi-building',
+      routerLink: '/barbearias'
+    },
+    {
+      label: 'Serviços',
+      icon: 'pi pi-list',
+      routerLink: '/servicos'
+    },
     {
       label: 'Profissionais',
       icon: 'pi pi-users',
@@ -96,13 +96,53 @@ export class MainLayoutComponent implements OnInit, OnDestroy {
       label: 'Agendamentos',
       icon: 'pi pi-calendar',
       routerLink: '/agendamentos'
+    }
+  ];
+
+  // ✅ MENU ESPECÍFICO PARA PROFISSIONAIS
+  menuItemsProfissional = [
+    {
+      label: 'Dashboard Profissional',
+      icon: 'pi pi-chart-bar',
+      routerLink: '/dashboard-profissional'
+    },
+    {
+      label: 'Minha Agenda',
+      icon: 'pi pi-calendar',
+      routerLink: '/agenda-profissional'
+    },
+    {
+      label: 'Meus Clientes',
+      icon: 'pi pi-users',
+      routerLink: '/clientes-profissional'
+    },
+    {
+      label: 'Meus Serviços',
+      icon: 'pi pi-list',
+      routerLink: '/servicos-profissional'
     },
     {
       label: 'Relatórios',
-      icon: 'pi pi-chart-bar',
-      routerLink: '/relatorios'
+      icon: 'pi pi-chart-line',
+      routerLink: '/relatorios-profissional'
+    },
+    {
+      label: 'Perfil',
+      icon: 'pi pi-user',
+      routerLink: '/perfil-profissional'
     }
   ];
+
+  // ✅ OBTER MENU BASEADO NO ROLE
+  getMenuItems(): any[] {
+    const currentUser = this.authService.getCurrentUser();
+    
+    if (currentUser?.role === 'PROFISSIONAL') {
+      return this.menuItemsProfissional;
+    }
+    
+    return this.menuItems;
+  }
 
   private destroy$ = new Subject<void>();
 

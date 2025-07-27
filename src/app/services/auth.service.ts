@@ -246,6 +246,18 @@ export class AuthService {
   }
 
   /**
+   * Buscar profissional por username (email/CPF)
+   */
+  buscarProfissionalPorUsername(username: string): Observable<any> {
+    return this.authRepository.buscarProfissionalPorUsername(username).pipe(
+      catchError(error => {
+        console.error('Erro ao buscar profissional:', error);
+        return of(null);
+      })
+    );
+  }
+
+  /**
    * Tratar sucesso do login
    */
   private handleLoginSuccess(response: LoginResponseDto): void {
@@ -253,12 +265,44 @@ export class AuthService {
     const accessToken = response.token || response.access_token;
     const refreshToken = response.refreshToken || response.refresh_token;
     
-            if (accessToken) {
-          this.saveTokens(accessToken, refreshToken || '');
-          this.currentUserSubject.next(response.user || null);
-          this.isAuthenticatedSubject.next(true);
-          this.router.navigate(['/welcome']);
-        } else {
+    if (accessToken) {
+      this.saveTokens(accessToken, refreshToken || '');
+      this.currentUserSubject.next(response.user || null);
+      this.isAuthenticatedSubject.next(true);
+      
+      // ✅ REDIRECIONAMENTO ESPECÍFICO POR ROLE
+      const user = response.user;
+      
+      if (user) {
+        // Normalizar o role para garantir comparação correta
+        const userRole = user.role?.toString().toUpperCase();
+        
+        switch (userRole) {
+          case 'PROFISSIONAL':
+            // Redirecionar para dashboard do profissional
+            this.router.navigate(['/dashboard-profissional'], {
+              queryParams: { profissionalId: user.profissional?.id }
+            });
+            break;
+          case 'ADMIN':
+            // Redirecionar para dashboard administrativo
+            this.router.navigate(['/dashboard']);
+            break;
+          case 'BARBEARIA':
+            // Redirecionar para dashboard administrativo
+            this.router.navigate(['/dashboard']);
+            break;
+          case 'CLIENTE':
+            // Redirecionar para área do cliente
+            this.router.navigate(['/welcome']);
+            break;
+          default:
+            this.router.navigate(['/welcome']);
+        }
+      } else {
+        this.router.navigate(['/welcome']);
+      }
+    } else {
       console.error('Token não encontrado na resposta:', response);
       this.setError('Erro: Token não encontrado na resposta do servidor');
     }

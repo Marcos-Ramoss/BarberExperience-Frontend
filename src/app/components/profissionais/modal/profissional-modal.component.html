@@ -121,6 +121,42 @@
       </small>
     </div>
 
+    <!-- Senha (apenas para criação) -->
+    <div *ngIf="!modoEdicao" class="form-field">
+      <label for="senha" class="form-label">Senha *</label>
+      <input 
+        pInputText 
+        id="senha" 
+        formControlName="senha" 
+        type="password"
+        placeholder="Digite sua senha"
+        class="form-input"
+        [class.invalid]="isFieldInvalid('senha')">
+      <small 
+        *ngIf="isFieldInvalid('senha')" 
+        class="error-message">
+        {{ getFieldError('senha') }}
+      </small>
+    </div>
+
+    <!-- Confirmar Senha (apenas para criação) -->
+    <div *ngIf="!modoEdicao" class="form-field">
+      <label for="confirmarSenha" class="form-label">Confirmar Senha *</label>
+      <input 
+        pInputText 
+        id="confirmarSenha" 
+        formControlName="confirmarSenha" 
+        type="password"
+        placeholder="Confirme sua senha"
+        class="form-input"
+        [class.invalid]="isFieldInvalid('confirmarSenha')">
+      <small 
+        *ngIf="isFieldInvalid('confirmarSenha')" 
+        class="error-message">
+        {{ getFieldError('confirmarSenha') }}
+      </small>
+    </div>
+
   </form>
 
   <!-- Loading -->
@@ -141,6 +177,19 @@
         (click)="hide()"
         [disabled]="loading">
       </button>
+      
+      <!-- Botão de acesso ao dashboard (apenas após criação) -->
+      <button 
+        *ngIf="profissionalCriadoId && !modoEdicao"
+        pButton 
+        type="button" 
+        label="Acessar Dashboard" 
+        icon="pi pi-chart-bar" 
+        class="p-button-info"
+        (click)="acessarDashboard()"
+        [disabled]="loading">
+      </button>
+      
       <button 
         pButton 
         type="submit" 

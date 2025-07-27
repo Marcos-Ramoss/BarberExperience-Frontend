@@ -33,6 +33,15 @@ export interface UserDto {
   active: boolean;
   createdAt: string;
   lastLogin?: string;
+  profissional?: {
+    id: number;
+    nome: string;
+    cpf: string;
+    telefone: string;
+    email: string;
+    especialidades: string[];
+    barbeariaId: number;
+  };
 }
 
 /**

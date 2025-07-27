@@ -32,6 +32,8 @@ export interface CriarProfissionalRequest {
   email: string;
   especialidades: string[];
   barbeariaId: number;
+  senha: string;
+  confirmarSenha: string;
 }
 
 /**
