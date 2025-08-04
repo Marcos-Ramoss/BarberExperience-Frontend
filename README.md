@@ -106,6 +106,13 @@ src/
 - 🎯 **Agendamento por profissional** e serviço
 
 
+### **7. Gestão de Serviços**
+- ✂️ **Catálogo de serviços** por barbearia
+- 💰 **Preços dinâmicos** e promoções
+- ⏱️ **Duração estimada** dos serviços
+- 🏷️ **Categorização** e filtros
+- 📊 **Relatórios** de serviços mais populares
+
 ---
 
 ## 🛠️ **Configuração e Instalação**
@@ -128,10 +135,3 @@ npm install
 npm start
 
 ```
-
-### **7. Gestão de Serviços**
-- ✂️ **Catálogo de serviços** por barbearia
-- 💰 **Preços dinâmicos** e promoções
-- ⏱️ **Duração estimada** dos serviços
-- 🏷️ **Categorização** e filtros
-- 📊 **Relatórios** de serviços mais populares
