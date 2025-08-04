@@ -105,6 +105,30 @@ src/
 - 📱 **Integração WhatsApp** para confirmações
 - 🎯 **Agendamento por profissional** e serviço
 
+
+---
+
+## 🛠️ **Configuração e Instalação**
+
+### **Pré-requisitos**
+- Node.js 18+ 
+- npm 9+
+- Angular CLI 20
+
+### **Instalação**
+```bash
+# Clone o repositório
+git clone [url-do-repositorio]
+cd frontend
+
+# Instale as dependências
+npm install
+
+# Execute em modo desenvolvimento
+npm start
+
+```
+
 ### **7. Gestão de Serviços**
 - ✂️ **Catálogo de serviços** por barbearia
 - 💰 **Preços dinâmicos** e promoções
